@@ -1,0 +1,2 @@
+# XNDynamicConfigurationTable
+可根据配置表动态改变结构与数据交互的表格页，适用于各种结构简单但字段时常变更的表格
