@@ -1,0 +1,44 @@
+{
+  "name": "XNDynamicConfigurationTable",
+  "version": "0.1.0",
+  "summary": "A short description of XNDynamicConfigurationTable.",
+  "description": "A table page that dynamically changes the structure and data source according to the configuration table, and is suitable for various forms with simple structure but frequently changed fields.",
+  "homepage": "https://github.com/yexiannan/XNDynamicConfigurationTable",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "yexiannan": "932056276@qq.com"
+  },
+  "source": {
+    "git": "https://github.com/yexiannan/XNDynamicConfigurationTable.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "XNDynamicConfigurationTable/Classes/**/*",
+  "dependencies": {
+    "XNUtils": [
+
+    ],
+    "YYModel": [
+
+    ],
+    "Masonry": [
+
+    ],
+    "XNNetWorkManager": [
+
+    ],
+    "ReactiveObjC": [
+
+    ]
+  },
+  "prefix_header_contents": [
+    "#import \"XNUtils.h\"",
+    "#import \"Masonry.h\"",
+    "#import \"ReactiveObjC.h\""
+  ]
+}

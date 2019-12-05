@@ -1,0 +1,63 @@
+PODS:
+  - AFNetworking (3.2.1):
+    - AFNetworking/NSURLSession (= 3.2.1)
+    - AFNetworking/Reachability (= 3.2.1)
+    - AFNetworking/Security (= 3.2.1)
+    - AFNetworking/Serialization (= 3.2.1)
+    - AFNetworking/UIKit (= 3.2.1)
+  - AFNetworking/NSURLSession (3.2.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.2.1)
+  - AFNetworking/Security (3.2.1)
+  - AFNetworking/Serialization (3.2.1)
+  - AFNetworking/UIKit (3.2.1):
+    - AFNetworking/NSURLSession
+  - Masonry (1.1.0)
+  - ReactiveObjC (3.1.1)
+  - SVProgressHUD (2.2.5)
+  - XNDynamicConfigurationTable (0.1.0):
+    - Masonry
+    - ReactiveObjC
+    - XNNetWorkManager
+    - XNUtils
+    - YYModel
+  - XNNetWorkManager (0.1.20):
+    - AFNetworking
+    - SVProgressHUD
+    - XNUtils
+    - YYModel
+  - XNUtils (0.2.2)
+  - YYModel (1.0.4)
+
+DEPENDENCIES:
+  - XNDynamicConfigurationTable (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - AFNetworking
+    - Masonry
+    - ReactiveObjC
+    - SVProgressHUD
+    - XNNetWorkManager
+    - XNUtils
+    - YYModel
+
+EXTERNAL SOURCES:
+  XNDynamicConfigurationTable:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  ReactiveObjC: 011caa393aa0383245f2dcf9bf02e86b80b36040
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+  XNDynamicConfigurationTable: b7ffdcd6da577aafe7a986b06dbc33a649234c5c
+  XNNetWorkManager: decc1ca6fb206253df5d494a527651d6082c31b4
+  XNUtils: 0b73458258d19ad9ed72a8289c652c912658a9ca
+  YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
+
+PODFILE CHECKSUM: 5af6a31855264e3562ef0f239c713717a0fb9baa
+
+COCOAPODS: 1.8.3

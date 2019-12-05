@@ -1,0 +1,6 @@
+framework module XNNetWorkManager {
+  umbrella header "XNNetWorkManager-umbrella.h"
+
+  export *
+  module * { export * }
+}

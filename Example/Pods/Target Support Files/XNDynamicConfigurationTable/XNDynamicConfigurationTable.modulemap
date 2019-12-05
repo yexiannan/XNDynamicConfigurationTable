@@ -1,0 +1,6 @@
+framework module XNDynamicConfigurationTable {
+  umbrella header "XNDynamicConfigurationTable-umbrella.h"
+
+  export *
+  module * { export * }
+}

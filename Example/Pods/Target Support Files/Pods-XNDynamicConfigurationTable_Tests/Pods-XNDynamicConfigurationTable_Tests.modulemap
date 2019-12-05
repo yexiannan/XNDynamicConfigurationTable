@@ -1,0 +1,6 @@
+framework module Pods_XNDynamicConfigurationTable_Tests {
+  umbrella header "Pods-XNDynamicConfigurationTable_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}

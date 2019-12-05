@@ -1,0 +1,6 @@
+framework module Pods_XNDynamicConfigurationTable_Example {
+  umbrella header "Pods-XNDynamicConfigurationTable_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}
