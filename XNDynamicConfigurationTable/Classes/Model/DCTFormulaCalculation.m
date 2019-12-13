@@ -11,11 +11,23 @@
 /**
  * formulaString:算式字符串 dataDict:数据字典 roundingType:取整方式 digitsAfterPoint:取小数点后几位
  */
-+ (id)getResultWithFormulaString:(NSString *)formulaString DataDictionary:(NSDictionary *)dataDict RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber{
++ (id)getResultWithFormulaString:(NSString *)formulaString DataDictionary:(NSDictionary *)dataDict RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber {
     //当传入的算式字符串为空或非字符串时 返回空
     if (STRING_IsNull(formulaString)) {
         return @"";
     }
+    
+    NSInteger leftParenthesisCount = [NSMutableArray arrayWithArray:[formulaString componentsSeparatedByString:@"("]].count;
+    NSInteger rightParenthesisCount = [NSMutableArray arrayWithArray:[formulaString componentsSeparatedByString:@")"]].count;
+    if (leftParenthesisCount != rightParenthesisCount) {
+        return [self createErrorWithErrorString:@"左右括号数量不一致"];
+    }
+    
+    return [self getResultWithCorrectFormulaString:formulaString DataDictionary:dataDict RoundingType:roundingType DecimalNumber:decimalNumber];
+}
+
+
++ (id)getResultWithCorrectFormulaString:(NSString *)formulaString DataDictionary:(NSDictionary *)dataDict RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber{
     
     NSRange firstTernaryOperatorRange = [formulaString rangeOfString:@" ? "];
     //三目运算
@@ -35,9 +47,11 @@
     }
 
     NSMutableArray *leftParenthesis = [NSMutableArray arrayWithArray:[formulaString componentsSeparatedByString:@"("]];
+    NSInteger leftParenthesisCount = leftParenthesis.count;
+
     NSMutableArray *rightParenthesis = [NSMutableArray arrayWithArray:[[leftParenthesis lastObject] componentsSeparatedByString:@")"]];
     //无算式只有一个keyPath时 直接返回绑定的值
-    if (leftParenthesis.count  == 1) {
+    if (leftParenthesisCount  == 1) {
         return [self getValueFromDictionary:dataDict KeyPath:[leftParenthesis firstObject] RoundingType:roundingType DecimalNumber:decimalNumber];
     }
     

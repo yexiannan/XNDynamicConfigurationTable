@@ -10,10 +10,24 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface Target_DynamicConfigurationTable : NSObject
-//判断数据是否填写完整 需传入数据和配置表 @{ @"data":@{}, @"configuration":@{} }
-- (BOOL)Action_DataIsCompleted:(NSDictionary *)params;
-- (UIView *)Action_CreateDynamicConfigurationTable:(NSDictionary *)params;
+/*
+ 根据配置表创建自定义表格 @{ @"params" : @{ @"configurationInfo" : @{},
+                                        @"dataInfo" : @{} },
+                         @"block" : @{ @"saveBlock" : saveBlock,
+                                       @"nextBlock" : nextBlock,
+                                       @"userInfoBlock" : userInfoBlock }
+                      }
+ */
+- (UIView *)Action_createDynamicConfigurationTable:(NSDictionary *)params;
 
+/*
+ @{ @"params" : @{ @"configurationInfo" : @{} }
+    @"block" : @{ @"successBlock" : successBlock,
+                  @"failureBlock" : failureBlock}
+ }
+ */
+- (void)Action_saveDynamicConfigurationTable:(NSDictionary *)params;
+ 
 @end
 
 NS_ASSUME_NONNULL_END

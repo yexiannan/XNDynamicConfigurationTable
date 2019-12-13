@@ -11,14 +11,17 @@
 #endif
 
 #import "DCTConfigurationModel.h"
-#import "DCTDataModel.h"
 #import "DCTFormulaCalculation.h"
 #import "Target_DynamicConfigurationTable.h"
 #import "DCTBaseTableView.h"
+#import "DCTSectionHeaderView.h"
+#import "DCTSectionHeaderViewModel.h"
 #import "DCTBaseTableViewCell.h"
+#import "DCTBaseTableViewCellViewModel.h"
 #import "DCTContentTableViewCell.h"
 #import "DCTTextFieldTableViewCell.h"
 #import "DCTTextViewTableViewCell.h"
+#import "DCTBaseTableViewModel.h"
 
 FOUNDATION_EXPORT double XNDynamicConfigurationTableVersionNumber;
 FOUNDATION_EXPORT const unsigned char XNDynamicConfigurationTableVersionString[];

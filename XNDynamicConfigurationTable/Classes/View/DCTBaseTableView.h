@@ -10,10 +10,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DCTBaseTableView : UIView
-@property (nonatomic, copy) NSDictionary *configurationInfo;//配置信息
-@property (nonatomic, copy) NSDictionary *dataInfo;//数据
-@property (nonatomic, strong) RACCommand *submitCommand;
-@property (nonatomic, strong) RACCommand *saveCommand;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithConfigurationInfo:(NSDictionary *)configurationInfo DataInfo:(NSMutableDictionary *)dataInfo SaveBlock:(nullable id)saveBlock NextBlock:(nullable id)nextBlock UserInfoBlock:(nullable id)userInfoBlock;
+
 @end
 
 /**

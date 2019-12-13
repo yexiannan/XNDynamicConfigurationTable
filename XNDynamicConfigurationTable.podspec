@@ -4,8 +4,6 @@
 #
 # Any lines starting with a # are optional, but their use is encouraged
 # To learn more about a Podspec see https://guides.cocoapods.org/syntax/podspec.html
-#
-
 Pod::Spec.new do |s|
   s.name             = 'XNDynamicConfigurationTable'
   s.version          = '0.1.0'
@@ -38,10 +36,12 @@ Pod::Spec.new do |s|
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  s.dependency 'XNUtils'
+  s.dependency 'XNBaseUtils'
+  s.dependency 'XNBaseUI'
+  s.dependency 'XNBaseController'
   s.dependency 'YYModel'
   s.dependency 'Masonry'
   s.dependency 'XNNetWorkManager'
   s.dependency 'ReactiveObjC'
-  s.prefix_header_contents = '#import "XNUtils.h"','#import "Masonry.h"','#import "ReactiveObjC.h"'
+  s.prefix_header_contents = '#import "XNBaseUtils.h"','#import "Masonry.h"','#import "ReactiveObjC.h"','#import "XNBaseUI.h"','#import "XNBaseViewController.h"','#import "UINavigationController+XNBaseNavigationController.h"','#import "YYModel.h"'
 end

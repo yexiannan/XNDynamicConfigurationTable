@@ -16,6 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *formulaString;
 @end
 
+@interface DCTURLInfoModel : NSObject
+@property (nonatomic, copy) NSNumber *host;
+@property (nonatomic, copy) NSString *path;
+@property (nonatomic, copy) NSDictionary *params;
+@end
+
 #pragma mark - 表格结构
 @interface DCTSectionInfoModel : NSObject
 @property (nonatomic, copy) NSString *title;
@@ -31,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) DCTDataBindInfoModel *nextShow;
 @property (nonatomic, copy) NSNumber *integrityVerificationBeforeSave;
 @property (nonatomic, copy) NSArray<DCTSectionInfoModel *> *sections;
+- (NSArray<NSDictionary *> *)createTableViewCellListWithData:(NSDictionary *)data;
 @end
 
 @interface DCTStagesInfoModel : NSObject
@@ -90,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DCTPickCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<NSString *> *content;
+@property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, copy) NSDictionary *dictionaryKey;
 @end
 
@@ -97,31 +105,45 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DCTPickFromServerCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<NSString *> *content;
-@property (nonatomic, copy) NSString *requestUrl;
-@property (nonatomic, copy) NSDictionary *params;
+@property (nonatomic, copy) NSString *placeholder;
+@property (nonatomic, strong) DCTURLInfoModel *request;
 @end
 
 //403.选择类型单元格-配置表带configList
 @interface DCTPickFromConfigCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<NSString *> *content;
-@property (nonatomic, copy) NSString *requestUrl;
+@property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, copy) NSArray<NSDictionary *> *configList;
 @end
 
-//501、502.选择时间单元格、选择时间区间单元格
+//501.选择单个时间单元格
 @interface DCTPickDateCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<NSString *> *content;
+@property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, copy) NSNumber *datePickType;
-@property (nonatomic, copy) NSString *minPickDate;
-@property (nonatomic, copy) NSString *maxPickDate;
+@property (nonatomic, copy) NSDictionary *minPickDate;
+@property (nonatomic, copy) NSDictionary *maxPickDate;
+@end
+
+//502.选择时间区间单元格
+@interface DCTPickDateZoneCellInfoModel : DCTBaseCellInfoModel
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSArray<NSString *> *content;
+@property (nonatomic, copy) NSString *placeholder;
+@property (nonatomic, copy) NSNumber *datePickType;
+@property (nonatomic, copy) NSDictionary *startMinPickDate;
+@property (nonatomic, copy) NSDictionary *startMaxPickDate;
+@property (nonatomic, copy) NSDictionary *endMinPickDate;
+@property (nonatomic, copy) NSDictionary *endMaxPickDate;
 @end
 
 //601.选择地址单元格-本地数据
 @interface DCTPickAddressCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<NSString *> *content;
+@property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, copy) NSString *separater;
 @property (nonatomic, copy) NSNumber *pickRange;
 @end
@@ -130,10 +152,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DCTPickAddressFromServerCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<NSString *> *content;
+@property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, copy) NSString *separater;
 @property (nonatomic, copy) NSNumber *pickRange;
-@property (nonatomic, copy) NSString *requestUrl;
-@property (nonatomic, copy) NSDictionary *params;
+@property (nonatomic, strong) DCTURLInfoModel *request;
 @end
 
 @interface DCTImagesInfoModel : NSObject
@@ -149,6 +171,8 @@ NS_ASSUME_NONNULL_BEGIN
 //701.选择图片-单key
 @interface DCTPickPhotoSingleKeyCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *imageKey;
+@property (nonatomic, copy) NSNumber *minNumber;
+@property (nonatomic, copy) NSNumber *maxNumber;
 @end
 
 //702.选择图片-多key
@@ -156,11 +180,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSArray<DCTImagesInfoModel *> *imagesInfo;
 @end
 
+//703.选择图片-从服务器获取
+@interface DCTPickPhotoFromServerCellInfoModel : DCTBaseCellInfoModel
+@property (nonatomic, strong) DCTURLInfoModel *request;
+@end
+
 //801.VIN码识别
 @interface DCTVINCodeRecognitionCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *content;
-@property (nonatomic, copy) NSString *requestUrl;
-@property (nonatomic, copy) NSDictionary *params;
+@property (nonatomic, strong) DCTURLInfoModel *request;
 @property (nonatomic, copy) NSArray<NSString *> *carInfo;
 @end
 
@@ -173,7 +201,6 @@ NS_ASSUME_NONNULL_BEGIN
 //1001.子表格
 @interface DCTSubTableCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
-@property (nonatomic, copy) NSArray<NSString *> *content;
 @property (nonatomic, copy) NSNumber *integrityVerification;
 @property (nonatomic, strong) DCTTableViewInfoModel *tableInfo;
 @end

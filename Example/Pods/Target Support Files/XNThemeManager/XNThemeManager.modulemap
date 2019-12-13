@@ -1,0 +1,6 @@
+framework module XNThemeManager {
+  umbrella header "XNThemeManager-umbrella.h"
+
+  export *
+  module * { export * }
+}

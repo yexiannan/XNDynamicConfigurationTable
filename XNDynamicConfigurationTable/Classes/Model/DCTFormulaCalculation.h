@@ -20,11 +20,6 @@ typedef NS_ENUM(NSInteger, DCTRoundingType) {
  * formulaString:算式字符串 dataDict:数据字典 roundingType:取整方式 decimalNumber:取小数点后几位
  */
 + (id)getResultWithFormulaString:(NSString *)formulaString DataDictionary:(NSDictionary *)dataDict RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber;
-/**
- * 计算单个算式 @"carInfoObj.price + carInfoObj.payment" => @"1505"
- */
-+ (id)getResultOfSingleFormula:(NSString *)formula DataDictionart:(NSDictionary *)dataDict RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber;
-
 @end
 
 NS_ASSUME_NONNULL_END

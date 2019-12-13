@@ -1,0 +1,6 @@
+framework module XNBaseUI {
+  umbrella header "XNBaseUI-umbrella.h"
+
+  export *
+  module * { export * }
+}

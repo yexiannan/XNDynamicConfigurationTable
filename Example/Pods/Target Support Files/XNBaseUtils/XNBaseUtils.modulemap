@@ -1,0 +1,6 @@
+framework module XNBaseUtils {
+  umbrella header "XNBaseUtils-umbrella.h"
+
+  export *
+  module * { export * }
+}

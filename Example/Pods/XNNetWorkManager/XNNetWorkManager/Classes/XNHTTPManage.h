@@ -13,8 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString * kNetWorkErrorTip;//网络请求错误提示文字
 
-typedef BOOL(^responseSuccessOperating)(id _Nullable kResponseObject);//返回值BOOL决定请求是否返回结果
-typedef BOOL(^responseFailureOperating)(NSError * _Nonnull kEror);//返回值BOOL决定请求是否返回结果
+typedef BOOL(^responseSuccessOperating)(id _Nullable kResponseObject);
+typedef BOOL(^responseFailureOperating)(NSError * _Nonnull kEror);
 
 typedef NS_ENUM(NSInteger, HttpMethod) {
     HttpMethod_Post,
@@ -43,8 +43,8 @@ typedef NS_ENUM(NSInteger ,HTTPManager_DuplicateType) {
 @property (nonatomic, strong)   AFHTTPRequestSerializer             *serializer;
 @property (nonatomic, strong)   AFSecurityPolicy                    *securityPolicy;
 @property (nonatomic, copy, nullable)   NSDictionary                *headers;
-@property (nonatomic, copy, nullable)   responseFailureOperating    failureOperating;
-@property (nonatomic, copy, nullable)   responseSuccessOperating    successOperating;
+@property (nonatomic, copy, nullable)   responseFailureOperating    failureOperating;//请求失败注入代码
+@property (nonatomic, copy, nullable)   responseSuccessOperating    successOperating;//请求成功注入代码
 
 + (XNHTTPManage *)httpManager;
 /**
