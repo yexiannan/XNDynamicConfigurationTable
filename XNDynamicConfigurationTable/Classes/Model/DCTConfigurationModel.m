@@ -8,27 +8,6 @@
 #import "DCTConfigurationModel.h"
 #import "DCTFormulaCalculation.h"
 
-typedef NS_ENUM(NSInteger, CellType) {
-    CellType_Content = 101,
-    CellType_ContentWithoutTitle = 102,
-    CellType_TextField = 201,
-    CellType_TextView = 301,
-    CellType_PickFromDictionary = 401,
-    CellType_PickFromServer = 402,
-    CellType_PickFromConfig = 403,
-    CellType_PickDate = 501,
-    CellType_PickDateZone = 502,
-    CellType_PickAddress = 601,
-    CellType_PickAddressFromServer = 602,
-    CellType_PickPhotoSingleKey = 701,
-    CellType_PickPhotoMutiKey = 702,
-    CellType_PickPhotoFromServer = 703,
-    CellType_VINCodeRecognition = 801,
-    CellType_MultiColumn = 901,
-    CellType_SubTable = 1001,
-    CellType_SeparatorCell = 1101,
-};
-
 @implementation DCTDataBindInfoModel
 - (instancetype)init {
     if (self = [super init]) {
@@ -64,35 +43,6 @@ typedef NS_ENUM(NSInteger, CellType) {
     return self;
 }
 
-- (void)setCells:(NSArray<id> *)cells {
-    NSMutableArray *cellsModel = [[NSMutableArray alloc] initWithCapacity:cells.count];
-    [(NSArray <NSDictionary *>*)cells enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        switch ([obj[@"cellType"] integerValue]) {
-            case CellType_Content: [cellsModel addObject:[DCTContentCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_ContentWithoutTitle: [cellsModel addObject:[DCTContentCellWithoutTitleInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_TextField: [cellsModel addObject:[DCTTextFieldCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_TextView: [cellsModel addObject:[DCTTextViewCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_PickFromDictionary: [cellsModel addObject:[DCTPickCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_PickFromServer: [cellsModel addObject:[DCTPickFromServerCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_PickFromConfig: [cellsModel addObject:[DCTPickFromConfigCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_PickDate: [cellsModel addObject:[DCTPickDateCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_PickDateZone: [cellsModel addObject:[DCTPickDateZoneCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_PickAddress: [cellsModel addObject:[DCTPickAddressCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_PickAddressFromServer: [cellsModel addObject:[DCTPickAddressFromServerCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_PickPhotoSingleKey: [cellsModel addObject:[DCTPickPhotoSingleKeyCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_PickPhotoMutiKey: [cellsModel addObject:[DCTPickPhotoMutiKeyCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_PickPhotoFromServer: [cellsModel addObject:[DCTPickPhotoFromServerCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_VINCodeRecognition: [cellsModel addObject:[DCTVINCodeRecognitionCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_MultiColumn: [cellsModel addObject:[DCTMultiColumnCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_SubTable: [cellsModel addObject:[DCTSubTableCellInfoModel yy_modelWithJSON:obj]]; break;
-            case CellType_SeparatorCell: [cellsModel addObject:[DCTSeparatorCellInfoModel yy_modelWithJSON:obj]]; break;
-
-            default:
-                break;
-        }
-    }];
-    _cells = cellsModel;
-}
 @end
 
 @implementation DCTTableViewInfoModel
@@ -123,17 +73,17 @@ typedef NS_ENUM(NSInteger, CellType) {
         if (![sectionShow isKindOfClass:[NSError class]]) {
             if ([sectionShow boolValue]) {
                 NSMutableArray *cellList = [NSMutableArray new];
-                [obj.cells enumerateObjectsUsingBlock:^(DCTBaseCellInfoModel * cellInfo, NSUInteger idx, BOOL * _Nonnull stop) {
-                    id cellShow = [DCTFormulaCalculation getResultWithFormulaString:cellInfo.show.formulaString
-                                                                     DataDictionary:data
-                                                                       RoundingType:[cellInfo.show.roundingType integerValue]
-                                                                      DecimalNumber:[cellInfo.show.decimalNumber integerValue]];
+                [obj.cells enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull cellInfo, NSUInteger idx, BOOL * _Nonnull stop) {
+                   id cellShow = [DCTFormulaCalculation getResultWithFormulaString:cellInfo[@"show"][@"formulaString"]
+                                                                    DataDictionary:data
+                                                                      RoundingType:[cellInfo[@"show"][@"roundingType"] integerValue]
+                                                                     DecimalNumber:[cellInfo[@"show"][@"decimalNumber"] integerValue]];
                     if (![cellShow isKindOfClass:[NSError class]]) {
                         if ([sectionShow boolValue]) {
-                            [cellList addObject:cellInfo.sort];
+                            [cellList addObject:cellInfo[@"sort"]];
                         }
                     } else {
-                        NSLog(@"addCellFailure CellSection:%@, CellSort:%@, reason:%@", obj.sort, cellInfo.sort, cellShow);
+                        NSLog(@"addCellFailure CellSection:%@, CellSort:%@, reason:%@", obj.sort, cellInfo[@"sort"], cellShow);
                     }
                 }];
                             
@@ -181,6 +131,7 @@ typedef NS_ENUM(NSInteger, CellType) {
 @implementation DCTBaseCellInfoModel
 + (NSDictionary *)modelContainerPropertyGenericClass {
     return @{@"show":[DCTDataBindInfoModel class],
+             @"canEdit":[DCTDataBindInfoModel class],
              @"bindData":[DCTDataBindInfoModel class]};
 }
 @end

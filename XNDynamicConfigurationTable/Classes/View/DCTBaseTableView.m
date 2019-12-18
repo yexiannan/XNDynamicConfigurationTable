@@ -8,8 +8,6 @@
 #import "DCTBaseTableView.h"
 #import "DCTBaseTableViewModel.h"
 
-#import "DCTSectionHeaderView.h"
-
 @interface DCTBaseTableView ()<UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UIButton *submitButton;
@@ -104,8 +102,8 @@
     _tableView.backgroundColor = COLOR_GARY_BG;
     _tableView.separatorColor = COLOR_GARY_BG;
     _tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
+    _tableView.delegate = self.viewModel;
+    _tableView.dataSource = self.viewModel;
     
     if(@available(iOS 11.0, *)) {
         
@@ -135,55 +133,6 @@
         make.left.top.right.equalTo(self);
         make.bottom.equalTo(self.submitButton.mas_top).offset((self.viewModel.canNext || self.viewModel.canSave) ? -10 : 0.01);
     }];
-}
-
-#pragma mark - UITableViewDelegate, UITableViewDataSource
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    
-    return self.viewModel.tableViewConfiguration.count;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    
-    NSArray *cellsArray = self.viewModel.tableViewConfiguration[section][@"cells"];
-    return cellsArray.count;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    return UITableViewAutomaticDimension;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    
-    return 0.01;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    
-    return sectionHeaderHeight;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    
-    DCTSectionHeaderView *header = [[DCTSectionHeaderView alloc] init];
-    [header setDataWithTitle:@""];
-    return header;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell"];
-    
-    if (!cell) {
-        
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"UITableViewCell"];
-    }
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
 }
 @end
  

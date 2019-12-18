@@ -13,7 +13,11 @@
 + (BOOL)stringIsNull:(id)string{
     if ([string isKindOfClass:[NSString class]]) {
         if (string && ![string isKindOfClass:[NSNull class]]) {
-            if (![@"<null>" isEqualToString:string] && ![@"" isEqualToString:string] && ![@"null" isEqualToString:string] && ![@"nil" isEqualToString:string]) {
+            if (![string isEqualToString:@"<null>"]
+                && ![string isEqualToString:@"(null)"]
+                && ![string isEqualToString:@"null"]
+                && ![string isEqualToString:@"nil"]
+                && ![string isEqualToString:@""]) {
                 return NO;
             }
         }

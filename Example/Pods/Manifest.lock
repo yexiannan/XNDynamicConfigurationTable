@@ -23,7 +23,7 @@ PODS:
     - XNThemeManager
   - XNBaseUI (0.1.1):
     - XNBaseUtils
-  - XNBaseUtils (0.1.1)
+  - XNBaseUtils (0.1.2)
   - XNDynamicConfigurationTable (0.1.0):
     - Masonry
     - ReactiveObjC
@@ -69,7 +69,7 @@ SPEC CHECKSUMS:
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   XNBaseController: cd6d0a02e2d82cb597720012031603650e3c8cee
   XNBaseUI: da875f04874938cb5d55e6ea83e422382bafd648
-  XNBaseUtils: 76ad23ae6765bdea4b966dc863045e701a5219bb
+  XNBaseUtils: 18f87ca3986c95be5427232ddca970271fdb06d9
   XNDynamicConfigurationTable: ddf3e8e7365602a880e77d819bf864b103e7f60f
   XNNetWorkManager: 53960cfae21df98960a1c124d45d7060575b3aa9
   XNThemeManager: 68bf32482a6d25a9699aa2b4b8abe2cdbfa1b3e1

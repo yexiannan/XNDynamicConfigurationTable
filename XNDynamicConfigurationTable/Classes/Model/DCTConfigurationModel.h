@@ -7,6 +7,27 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSInteger, DCTConfigurationCellType) {
+    DCTConfigurationCellType_Content = 101,
+    DCTConfigurationCellType_ContentWithoutTitle = 102,
+    DCTConfigurationCellType_TextField = 201,
+    DCTConfigurationCellType_TextView = 301,
+    DCTConfigurationCellType_PickFromDictionary = 401,
+    DCTConfigurationCellType_PickFromServer = 402,
+    DCTConfigurationCellType_PickFromConfig = 403,
+    DCTConfigurationCellType_PickDate = 501,
+    DCTConfigurationCellType_PickDateZone = 502,
+    DCTConfigurationCellType_PickAddress = 601,
+    DCTConfigurationCellType_PickAddressFromServer = 602,
+    DCTConfigurationCellType_PickPhotoSingleKey = 701,
+    DCTConfigurationCellType_PickPhotoMutiKey = 702,
+    DCTConfigurationCellType_PickPhotoFromServer = 703,
+    DCTConfigurationCellType_VINCodeRecognition = 801,
+    DCTConfigurationCellType_MultiColumn = 901,
+    DCTConfigurationCellType_SubTable = 1001,
+    DCTConfigurationCellType_SeparatorCell = 1101,
+};
+
 NS_ASSUME_NONNULL_BEGIN
 @interface DCTDataBindInfoModel : NSObject
 @property (nonatomic, copy) NSArray<NSString *> *bindData;
@@ -28,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *subTitle;
 @property (nonatomic, copy) NSNumber *sort;
 @property (nonatomic, strong) DCTDataBindInfoModel *show;
-@property (nonatomic, copy) NSArray<id> *cells;
+@property (nonatomic, copy) NSArray<NSDictionary *> *cells;
 @end
 
 @interface DCTTableViewInfoModel : NSObject
@@ -57,6 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSNumber *cellType;
 @property (nonatomic, copy) NSNumber *sort;
 @property (nonatomic, strong) DCTDataBindInfoModel *show;
+@property (nonatomic, strong) DCTDataBindInfoModel *canEdit;
 @property (nonatomic, copy) NSNumber *necessary;
 @property (nonatomic, copy) NSArray<DCTDataBindInfoModel *> *bindData;
 @end
@@ -65,14 +87,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DCTContentCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<NSString *> *content;
-@property (nonatomic, copy) NSString *separater;
+@property (nonatomic, copy) NSString *separator;
 @property (nonatomic, copy) NSString *unit;
 @end
 
 //102.文本无标题
 @interface DCTContentCellWithoutTitleInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSArray<NSString *> *content;
-@property (nonatomic, copy) NSString *separater;
+@property (nonatomic, copy) NSString *separator;
 @end
 
 //201.输入框
@@ -144,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<NSString *> *content;
 @property (nonatomic, copy) NSString *placeholder;
-@property (nonatomic, copy) NSString *separater;
+@property (nonatomic, copy) NSString *separator;
 @property (nonatomic, copy) NSNumber *pickRange;
 @end
 
@@ -153,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<NSString *> *content;
 @property (nonatomic, copy) NSString *placeholder;
-@property (nonatomic, copy) NSString *separater;
+@property (nonatomic, copy) NSString *separator;
 @property (nonatomic, copy) NSNumber *pickRange;
 @property (nonatomic, strong) DCTURLInfoModel *request;
 @end
@@ -209,7 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DCTSeparatorCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *content;
-@property (nonatomic, copy) NSString *separater;
+@property (nonatomic, copy) NSString *separator;
 @property (nonatomic, copy) NSString *backgroundColor;
 @property (nonatomic, copy) NSNumber *rowHeight;
 @end

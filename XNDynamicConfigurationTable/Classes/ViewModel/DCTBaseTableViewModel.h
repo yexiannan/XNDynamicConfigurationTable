@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface DCTBaseTableViewModel : NSObject
+@interface DCTBaseTableViewModel : NSObject<UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, copy) NSArray<NSDictionary *> *tableViewConfiguration;
 
 @property (nonatomic, assign) BOOL canSave;//页面是否可保存
@@ -19,7 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithConfigurationInfo:(NSDictionary *)configurationInfo DataInfo:(NSMutableDictionary *)dataInfo SaveBlock:(nullable id)saveBlock NextBlock:(nullable id)nextBlock UserInfoBlock:(nullable id)userInfoBlock NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (NSString *)sectionTitleWithSectionTag:(NSString *)sectionTag;
+- (NSDictionary *)sectionConfigurationWithSection:(NSInteger)section;
+- (id)cellConfigurationWithIndexPath:(NSIndexPath *)indexPath;
 
 @end
 

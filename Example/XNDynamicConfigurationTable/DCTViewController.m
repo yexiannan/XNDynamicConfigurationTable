@@ -70,7 +70,15 @@
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [self.view addSubview:view];
                 [view mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.left.right.top.bottom.equalTo(self.view);
+                    make.left.right.equalTo(self.view);
+                    if (@available(iOS 11.0, *)) {
+                        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
+                        make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideBottom);
+                    } else {
+                        make.top.equalTo(self.mas_topLayoutGuide);
+                        make.bottom.equalTo(self.mas_bottomLayoutGuide);
+                    }
+                    
                 }];
             }];
         }
