@@ -8,7 +8,7 @@
 #import "DCTBaseTableView.h"
 #import "DCTBaseTableViewModel.h"
 
-@interface DCTBaseTableView ()<UITableViewDelegate, UITableViewDataSource>
+@interface DCTBaseTableView ()
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) DCTBaseTableViewModel *viewModel;
@@ -17,15 +17,23 @@
 
 @implementation DCTBaseTableView
 
-- (instancetype)initWithConfigurationInfo:(NSDictionary *)configurationInfo DataInfo:(nonnull NSMutableDictionary *)dataInfo SaveBlock:(nullable id)saveBlock NextBlock:(nullable id)nextBlock UserInfoBlock:(nullable id)userInfoBlock {
+- (instancetype)initWithConfigurationInfo:(NSDictionary *)configurationInfo
+                                SaveBlock:(id)saveBlock
+                                NextBlock:(id)nextBlock
+                            DataInfoBlock:(DataInfoBlock)dataInfoBlock
+                            UserInfoBlock:(UserInfoBlock)userInfoBlock
+                             DataInfoBind:(DataInfoBind)dataInfoBind
+                             UserInfoBind:(UserInfoBind)userInfoBind {
     
     if (self = [super init]) {
         
         self.viewModel = [[DCTBaseTableViewModel alloc] initWithConfigurationInfo:configurationInfo
-                                                                         DataInfo:dataInfo
                                                                         SaveBlock:saveBlock
                                                                         NextBlock:nextBlock
-                                                                    UserInfoBlock:userInfoBlock];
+                                                                    DataInfoBlock:dataInfoBlock
+                                                                    UserInfoBlock:userInfoBlock
+                                                                     DataInfoBind:dataInfoBind
+                                                                     UserInfoBind:userInfoBind];
         
         [self createUI];
         [self subscribeSignal];

@@ -57,6 +57,7 @@ static CGFloat const _imageInset = 15.f;//提示图片距离单元格右边间�
 }
 
 - (void)setDataWithTitle:(NSString *)title Content:(NSString *)content{
+    
     //设置title
     NSArray *titleArray = [title componentsSeparatedByString:@"__"];
     NSString *titleString = [titleArray firstObject];
@@ -78,7 +79,6 @@ static CGFloat const _imageInset = 15.f;//提示图片距离单元格右边间�
                             range:[titleString rangeOfString:[titleArray lastObject]]];
     }
     self.cellTitleLabel.attributedText = titleAttStr;
-    [self.cellTitleLabel sizeToFit];
 
     //设置content
     if (STRING_IsNull(self.attributedUnitString.string)) {
@@ -96,15 +96,18 @@ static CGFloat const _imageInset = 15.f;//提示图片距离单元格右边间�
         [contentAttString appendAttributedString:self.attributedUnitString];
         self.cellContentLabel.attributedText = contentAttString;
     }
-
-    CGFloat cellContentLabelWidth = SCREEN_WIDTH - (_titleLeftInset + self.cellTitleLabel.width + (STRING_IsNull(self.cellTitleLabel.text) ? 0 : _titleAndContentInset) + (self.hiddenIcon ? _imageInset : (_imageInset + 6 + _contentAndImageInset)));
-    self.cellContentLabel.frame = CGRectMake(0, 0, cellContentLabelWidth, 0.01);
-    [self.cellContentLabel sizeToFit];
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
 }
 
 - (CGFloat)cellHeight {
-    CGFloat height = self.cellContentLabel.height + 10 * 2;
-    return height < 50 ? 50 : height;
+    CGFloat titleWidth = [NSString getSizeWithString:STRING_Safe(self.cellTitleLabel.attributedText.string) withFont:self.cellTitleLabel.font LimitWidth:SCREEN_WIDTH].width;
+    
+    CGFloat cellContentLabelWidth = SCREEN_WIDTH - (_titleLeftInset + titleWidth + (STRING_IsNull(self.cellTitleLabel.attributedText.string) ? 0 : _titleAndContentInset) + (self.hiddenIcon ? _imageInset : (_imageInset + 6 + _contentAndImageInset)));
+    
+    CGFloat height = [NSString getSizeWithString:self.cellContentLabel.attributedText.string withFont:self.cellContentLabel.font LimitWidth:cellContentLabelWidth].height;
+    
+    return height + 20 > 70 ? height + 20 : 70;
 }
 
 #pragma mark - LayoutUI
@@ -124,26 +127,30 @@ static CGFloat const _imageInset = 15.f;//提示图片距离单元格右边间�
 - (void)layoutUI {
     self.icon.hidden = self.hiddenIcon;
     
-    [self.cellTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    CGFloat titleWidth = [NSString getSizeWithString:STRING_Safe(self.cellTitleLabel.attributedText.string) withFont:self.cellTitleLabel.font LimitWidth:SCREEN_WIDTH].width;
+    CGFloat cellContentLabelWidth = SCREEN_WIDTH - (_titleLeftInset + titleWidth + (STRING_IsNull(self.cellTitleLabel.attributedText.string) ? 0 : _titleAndContentInset) + (self.hiddenIcon ? _imageInset : (_imageInset + 6 + _contentAndImageInset)));
+
+    
+    [self.cellTitleLabel mas_updateConstraints:^(MASConstraintMaker *make) {
         make.centerY.height.equalTo(self.contentView);
         make.left.offset(_titleLeftInset);
-        make.width.offset(self.cellTitleLabel.width);
+        make.width.offset(titleWidth);
     }];
     
-    [self.icon mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.icon mas_updateConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(self.contentView);
         make.right.offset(-_imageInset);
         make.width.offset(6);
         make.height.offset(12);
     }];
     
-    [self.cellContentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.cellTitleLabel.mas_right).offset(STRING_IsNull(self.cellTitleLabel.text) ? 0 : _titleAndContentInset);
+    [self.cellContentLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.cellTitleLabel.mas_right).offset(STRING_IsNull(self.cellTitleLabel.attributedText.string) ? 0 : _titleAndContentInset);
         make.right.offset(self.hiddenIcon ? -_imageInset : -(_imageInset + 6 + _contentAndImageInset));
         //设置约束决定单元格高度
-        CGFloat height = self.cellContentLabel.height + 20;
+        CGFloat height = [NSString getSizeWithString:self.cellContentLabel.attributedText.string withFont:self.cellContentLabel.font LimitWidth:cellContentLabelWidth].height;
         make.top.bottom.equalTo(self.contentView);
-        make.height.offset(height > 50 ? height : 50).priority(900);
+        make.height.offset(height + 20 > 70 ? height + 20 : 70).priority(900);
     }];
 }
 

@@ -1,6 +1,0 @@
-framework module XNUtils {
-  umbrella header "XNUtils-umbrella.h"
-
-  export *
-  module * { export * }
-}

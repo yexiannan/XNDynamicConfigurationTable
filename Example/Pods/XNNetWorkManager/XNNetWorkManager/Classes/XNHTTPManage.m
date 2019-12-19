@@ -11,6 +11,12 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SVProgressHUD.h"
 
+#ifdef DEBUG
+#define NSLog(...) printf("\n [Date:%f]\n [Function:%s]\n [Line:%d]\n %s\n",[[NSDate date]timeIntervalSince1970], __FUNCTION__, __LINE__,[[NSString stringWithFormat:__VA_ARGS__] UTF8String]);
+#else
+#define NSLog(format, ...)
+#endif
+
 NSString * kNetWorkErrorTip = @"网络异常,请稍后再试!";
 
 @interface XNHTTPManage ()

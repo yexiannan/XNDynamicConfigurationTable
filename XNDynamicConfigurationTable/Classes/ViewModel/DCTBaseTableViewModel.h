@@ -16,7 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL canNext;//页面是否可提交至下一步
 
 @property (nonatomic, strong) RACCommand *submitCommand;
-- (instancetype)initWithConfigurationInfo:(NSDictionary *)configurationInfo DataInfo:(NSMutableDictionary *)dataInfo SaveBlock:(nullable id)saveBlock NextBlock:(nullable id)nextBlock UserInfoBlock:(nullable id)userInfoBlock NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConfigurationInfo:(NSDictionary *)configurationInfo
+                                SaveBlock:(nullable id)saveBlock
+                                NextBlock:(nullable id)nextBlock
+                            DataInfoBlock:(nullable DataInfoBlock)dataInfoBlock
+                            UserInfoBlock:(nullable UserInfoBlock)userInfoBlock
+                             DataInfoBind:(nullable DataInfoBind)dataInfoBind
+                             UserInfoBind:(nullable UserInfoBind)userInfoBind NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (NSDictionary *)sectionConfigurationWithSection:(NSInteger)section;

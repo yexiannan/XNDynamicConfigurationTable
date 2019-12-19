@@ -14,6 +14,5 @@
 #import "Masonry.h"
 #import "ReactiveObjC.h"
 #import "XNBaseUI.h"
-#import "XNBaseViewController.h"
-#import "UINavigationController+XNBaseNavigationController.h"
 #import "YYModel.h"
+#import "DCTUtilsClass.h"

@@ -7,7 +7,6 @@
 
 #import "DCTBaseTableViewModel.h"
 #import "DCTConfigurationModel.h"
-#import "DCTFormulaCalculation.h"
 
 #import "DCTSectionHeaderViewModel.h"
 #import "DCTTextFieldTableViewCellViewModel.h"
@@ -16,42 +15,58 @@
 
 @interface DCTBaseTableViewModel ()
 @property (nonatomic, strong) DCTTableViewInfoModel *configurationModel;
-@property (nonatomic, strong) NSMutableDictionary *dataInfo;
-@property (nonatomic, strong) NSMutableDictionary *dataInfoCopy;
 @property (nonatomic, copy) id saveBlock;
 @property (nonatomic, copy) id nextBlock;
-@property (nonatomic, copy) id userInfoBlock;
+@property (nonatomic, copy) UserInfoBlock userInfoBlock;
+@property (nonatomic, copy) DataInfoBlock dataInfoBlock;
+@property (nonatomic, copy) DataInfoBind dataInfoBind;
+@property (nonatomic, copy) UserInfoBind userInfoBind;
+
 @end
 
 @implementation DCTBaseTableViewModel
-- (instancetype)initWithConfigurationInfo:(NSDictionary *)configurationInfo DataInfo:(nonnull NSMutableDictionary *)dataInfo SaveBlock:(nullable id)saveBlock NextBlock:(nullable id)nextBlock UserInfoBlock:(nullable id)userInfoBlock {
+- (instancetype)initWithConfigurationInfo:(NSDictionary *)configurationInfo
+                                SaveBlock:(id)saveBlock
+                                NextBlock:(id)nextBlock
+                            DataInfoBlock:(DataInfoBlock)dataInfoBlock
+                            UserInfoBlock:(UserInfoBlock)userInfoBlock
+                             DataInfoBind:(DataInfoBind)dataInfoBind
+                             UserInfoBind:(UserInfoBind)userInfoBind {
     if (self = [super init]) {
         if ([configurationInfo isKindOfClass:[NSDictionary class]]) {
             self.configurationModel = [DCTTableViewInfoModel yy_modelWithJSON:configurationInfo];
         }
-        if ([dataInfo isKindOfClass:[NSDictionary class]]) {
-            self.dataInfo = dataInfo;
-            self.dataInfoCopy = [dataInfo mutableCopy];
-        }   
+        
         if (saveBlock) { self.saveBlock = saveBlock; }
         if (nextBlock) { self.nextBlock = nextBlock; }
         if (userInfoBlock) { self.userInfoBlock = userInfoBlock; }
+        if (dataInfoBlock) { self.dataInfoBlock = dataInfoBlock; }
+        if (userInfoBind) { self.userInfoBind = userInfoBind; }
+        if (dataInfoBind) { self.dataInfoBind = dataInfoBind; }
 
-        self.tableViewConfiguration = [self.configurationModel createTableViewCellListWithData:self.dataInfoCopy];
         
-        id canSaveResult = [DCTFormulaCalculation getResultWithFormulaString:self.configurationModel.saveShow.formulaString
-                                                              DataDictionary:self.dataInfoCopy
-                                                                RoundingType:[self.configurationModel.saveShow.roundingType integerValue]
-                                                               DecimalNumber:[self.configurationModel.saveShow.decimalNumber integerValue]];
-        id canNextResult = [DCTFormulaCalculation getResultWithFormulaString:self.configurationModel.nextShow.formulaString
-                                                              DataDictionary:self.dataInfoCopy
-                                                                RoundingType:[self.configurationModel.nextShow.roundingType integerValue]
-                                                               DecimalNumber:[self.configurationModel.nextShow.decimalNumber integerValue]];
-        if ([canSaveResult isKindOfClass:[NSString class]] && [canSaveResult boolValue]) {
+        self.tableViewConfiguration = [self.configurationModel createTableViewCellListWithDataInfoBlock:dataInfoBlock UserInfoBlock:userInfoBlock];
+        
+        id canSaveResult = [DCTUtilsClass getResultWithFormulaString:self.configurationModel.saveShow.formulaString
+                                                      RoundingType:[self.configurationModel.saveShow.roundingType integerValue]
+                                                     DecimalNumber:[self.configurationModel.saveShow.decimalNumber integerValue]
+                                                     UserInfoBlock:userInfoBlock
+                                                     DataInfoBlock:dataInfoBlock];
+       
+        id canNextResult = [DCTUtilsClass getResultWithFormulaString:self.configurationModel.nextShow.formulaString
+                                                      RoundingType:[self.configurationModel.nextShow.roundingType integerValue]
+                                                     DecimalNumber:[self.configurationModel.nextShow.decimalNumber integerValue]
+                                                     UserInfoBlock:userInfoBlock
+                                                     DataInfoBlock:dataInfoBlock];
+        
+
+        if (([canSaveResult isKindOfClass:[NSString class]] || [canSaveResult isKindOfClass:[NSNumber class]])
+            && [canSaveResult boolValue]) {
             self.canSave = YES;
         }
         
-        if ([canNextResult isKindOfClass:[NSString class]] && [canNextResult boolValue]) {
+        if (([canNextResult isKindOfClass:[NSString class]] || [canSaveResult isKindOfClass:[NSNumber class]])
+            && [canSaveResult boolValue]) {
             self.canNext = YES;
         }
         
@@ -149,17 +164,17 @@
         viewModel.block = ^(NSString * _Nonnull text) {
             
         };
-        return viewModel.cellBlock(tableView, indexPath, dict, self.dataInfoCopy, self.userInfoBlock);
+        return viewModel.cellBlock(tableView, indexPath, dict, self.dataInfoBlock, self.userInfoBlock);
     }
     
     if ([dict[@"cellType"] integerValue] == DCTConfigurationCellType_Content) {
         DCTContentTableViewCellViewModel *viewModel = [[DCTContentTableViewCellViewModel alloc] init];
-        return viewModel.cellBlock(tableView, indexPath, dict, self.dataInfoCopy, self.userInfoBlock);
+        return viewModel.cellBlock(tableView, indexPath, dict, self.dataInfoBlock, self.userInfoBlock);
     }
     
     if ([dict[@"cellType"] integerValue] == DCTConfigurationCellType_PickFromDictionary) {
         DCTPickTypeTableViewCellViewModel *viewModel = [[DCTPickTypeTableViewCellViewModel alloc] init];
-        return viewModel.cellBlock(tableView, indexPath, dict, self.dataInfoCopy, self.userInfoBlock);
+        return viewModel.cellBlock(tableView, indexPath, dict, self.dataInfoBlock, self.userInfoBlock);
     }
 
     return [UITableViewCell new];
@@ -173,13 +188,19 @@
         || [dict[@"cellType"] integerValue] == DCTConfigurationCellType_PickFromConfig) {
         
         DCTPickTypeTableViewCellViewModel *viewModel = [[DCTPickTypeTableViewCellViewModel alloc] init];
-        [viewModel pickTypeWithTableView:tableView IndexPath:indexPath CellConfig:dict DataInfo:self.dataInfoCopy CompletedBlock:^{
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        
+        [viewModel pickTypeWithTableView:tableView IndexPath:indexPath CellConfig:dict DataInfoBlock:self.dataInfoBlock UserInfoBlock:self.userInfoBlock CompletedBlock:^{
+           [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [tableView reloadData];
             }];
         }];
         
     }
+    
+}
+
+- (void)dealloc {
+    
 }
 
 @end

@@ -11,40 +11,48 @@
 @implementation Target_DynamicConfigurationTable
 - (UIView *)Action_createDynamicConfigurationTable:(NSDictionary *)params {
     /*
-    根据配置表创建自定义表格 @{ @"params" : @{ @"configurationInfo" : @{},
-                                           @"dataInfo" : @{} },
+    根据配置表创建自定义表格 @{ @"params" : @{ @"configurationInfo" : @{} },
                             @"block" : @{ @"saveBlock" : saveBlock,
                                           @"nextBlock" : nextBlock,
-                                          @"userInfoBlock" : userInfoBlock}
+                                          @"dataInfoBlock" : dataInfoBlock
+                                          @"userInfoBlock" : userInfoBlock
+                                          @"dataInfoBind" : dataInfoBind
+                                          @"userInfoBind" : userInfoBInd }
                          }
     */
     id param = [params objectForKey:@"params"];
     id block = [params objectForKey:@"block"];
-    id configurationInfo, dataInfo;
+    id configurationInfo;
     
     void (^saveBlock)(NSDictionary *dataInfo);
     void (^nextBlock)(NSDictionary *dataInfo);
-    id (^userInfoBlock)(NSString *keyPath);
-
+    DataInfoBlock dataInfoBlock;
+    UserInfoBlock userInfoBlock;
+    DataInfoBind dataInfoBind;
+    UserInfoBind userInfoBind;
+    
     if ([param isKindOfClass:[NSDictionary class]]) {
         configurationInfo = [(NSDictionary *)param objectForKey:@"configurationInfo"];
-        dataInfo = [(NSDictionary *)param objectForKey:@"dataInfo"];
     }
     
     if ([block isKindOfClass:[NSDictionary class]]) {
         saveBlock = [(NSDictionary *)block objectForKey:@"saveBlock"];
         nextBlock = [(NSDictionary *)block objectForKey:@"nextBlock"];
+        dataInfoBlock = [(NSDictionary *)block objectForKey:@"dataInfoBlock"];
         userInfoBlock = [(NSDictionary *)block objectForKey:@"userInfoBlock"];
+        dataInfoBind = [(NSDictionary *)block objectForKey:@"dataInfoBind"];
+        userInfoBind = [(NSDictionary *)block objectForKey:@"userInfoBind"];
     }
         
     NSAssert([configurationInfo isKindOfClass:[NSDictionary class]], @"配置表信息为空或类型错误");
-//    NSAssert([dataInfo isKindOfClass:[NSDictionary class]], @"表格数据为空或类型错误");
     
     DCTBaseTableView *view = [[DCTBaseTableView alloc] initWithConfigurationInfo:configurationInfo
-                                                                        DataInfo:dataInfo
                                                                        SaveBlock:saveBlock
                                                                        NextBlock:nextBlock
-                                                                   UserInfoBlock:userInfoBlock];
+                                                                   DataInfoBlock:dataInfoBlock
+                                                                   UserInfoBlock:userInfoBlock
+                                                                    DataInfoBind:dataInfoBind
+                                                                    UserInfoBind:userInfoBind];
     return view;
 }
 

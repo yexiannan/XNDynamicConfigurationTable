@@ -1,17 +1,17 @@
 //
-//  DCTFormulaCalculation.m
-//  XNDynamicConfigurationTable
+//  DCTUtilsClass.m
+//  Pods
 //
-//  Created by Luigi on 2019/11/25.
+//  Created by Luigi on 2019/12/18.
 //
 
-#import "DCTFormulaCalculation.h"
+#import "DCTUtilsClass.h"
 
-@implementation DCTFormulaCalculation
+@implementation DCTUtilsClass
 /**
  * formulaString:算式字符串 dataDict:数据字典 roundingType:取整方式 digitsAfterPoint:取小数点后几位
  */
-+ (id)getResultWithFormulaString:(NSString *)formulaString DataDictionary:(NSDictionary *)dataDict RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber {
++ (id)getResultWithFormulaString:(NSString *)formulaString RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock {
     //当传入的算式字符串为空或非字符串时 返回空
     if (STRING_IsNull(formulaString)) {
         return @"";
@@ -23,41 +23,58 @@
         return [self createErrorWithErrorString:@"左右括号数量不一致"];
     }
     
-    return [self getResultWithCorrectFormulaString:formulaString DataDictionary:dataDict RoundingType:roundingType DecimalNumber:decimalNumber];
+    return [self getResultWithCorrectFormulaString:formulaString RoundingType:roundingType DecimalNumber:decimalNumber UserInfoBlock:userInfoBlock DataInfoBlock:dataInfoBlock];
 }
 
 
-+ (id)getResultWithCorrectFormulaString:(NSString *)formulaString DataDictionary:(NSDictionary *)dataDict RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber{
++ (id)getResultWithCorrectFormulaString:(NSString *)formulaString RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock {
     
     NSRange firstTernaryOperatorRange = [formulaString rangeOfString:@" ? "];
     //三目运算
     if (firstTernaryOperatorRange.length > 0) {
         NSString *forntString = [formulaString substringToIndex:firstTernaryOperatorRange.location];
         NSString *behindString = [formulaString substringFromIndex:firstTernaryOperatorRange.location + firstTernaryOperatorRange.length];
-        id ternaryOperatorResult = [self getResultWithFormulaString:forntString DataDictionary:dataDict RoundingType:roundingType DecimalNumber:decimalNumber];
+        id ternaryOperatorResult = [self getResultWithCorrectFormulaString:forntString
+                                                              RoundingType:roundingType
+                                                             DecimalNumber:decimalNumber
+                                                             UserInfoBlock:userInfoBlock
+                                                             DataInfoBlock:dataInfoBlock];
+        
         if ([ternaryOperatorResult isKindOfClass:[NSError class]]) {
             return ternaryOperatorResult;
         }
+        
         //去除前部逻辑判断字符串
         forntString = [self stringOfTernaryOperatorForntPart:forntString];
         //根据结果去除后部结果字符串
         behindString = [self stringOfTernaryOperatorBehindPart:behindString TernaryOperatorResult:[ternaryOperatorResult boolValue]];
     
-        return [self getResultWithFormulaString:[forntString stringByAppendingString:behindString] DataDictionary:dataDict RoundingType:roundingType DecimalNumber:decimalNumber];
+        return [self getResultWithCorrectFormulaString:[forntString stringByAppendingString:behindString]
+                                          RoundingType:roundingType
+                                         DecimalNumber:decimalNumber
+                                         UserInfoBlock:userInfoBlock
+                                         DataInfoBlock:dataInfoBlock];
     }
 
     NSMutableArray *leftParenthesis = [NSMutableArray arrayWithArray:[formulaString componentsSeparatedByString:@"("]];
     NSInteger leftParenthesisCount = leftParenthesis.count;
-
     NSMutableArray *rightParenthesis = [NSMutableArray arrayWithArray:[[leftParenthesis lastObject] componentsSeparatedByString:@")"]];
     //无算式只有一个keyPath时 直接返回绑定的值
     if (leftParenthesisCount  == 1) {
-        return [self getValueFromDictionary:dataDict KeyPath:[leftParenthesis firstObject] RoundingType:roundingType DecimalNumber:decimalNumber];
+        return [self getValueWithKeyPath:[leftParenthesis firstObject]
+                           UserInfoBlock:userInfoBlock
+                           DataInfoBlock:dataInfoBlock
+                            RoundingType:roundingType
+                           DecimalNumber:decimalNumber];
     }
     
     //计算最里层的算式
     NSString *formula = [rightParenthesis firstObject];
-    id result = [self getResultOfSingleFormula:formula DataDictionart:dataDict RoundingType:roundingType DecimalNumber:decimalNumber];
+    id result = [self getResultOfSingleFormula:formula
+                                  RoundingType:roundingType
+                                 DecimalNumber:decimalNumber
+                                 UserInfoBlock:userInfoBlock
+                                 DataInfoBlock:dataInfoBlock];
 
     if ([result isKindOfClass:[NSError class]]) {
         return result;
@@ -83,23 +100,41 @@
 
     NSString *newFormula = [leftParenthesis componentsJoinedByString:@"("];
     
-    return [self getResultWithFormulaString:newFormula DataDictionary:dataDict RoundingType:roundingType DecimalNumber:decimalNumber];
+    return [self getResultOfSingleFormula:newFormula
+                             RoundingType:roundingType
+                            DecimalNumber:decimalNumber
+                            UserInfoBlock:userInfoBlock
+                            DataInfoBlock:dataInfoBlock];;
 }
 
 /**
  * 计算单个算式 @"carInfoObj.price + carInfoObj.payment" => @"1505"
  */
-+ (id)getResultOfSingleFormula:(NSString *)formula DataDictionart:(NSDictionary *)dataDict RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber{
++ (id)getResultOfSingleFormula:(NSString *)formula RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock{
     NSArray<NSString *> *paramsArray = [formula componentsSeparatedByString:@" "];
     if (paramsArray.count != 3) {
         if (paramsArray.count == 1) {
-            return [self getValueFromDictionary:dataDict KeyPath:[paramsArray firstObject] RoundingType:roundingType DecimalNumber:decimalNumber];
+            return [self getValueWithKeyPath:[paramsArray firstObject]
+                               UserInfoBlock:userInfoBlock
+                               DataInfoBlock:dataInfoBlock
+                                RoundingType:roundingType
+                               DecimalNumber:decimalNumber];
         }
         return [self createErrorWithErrorString:[NSString stringWithFormat:@"%@算式格式不正确,缺少参数或参数间未用空格分割",formula]];
     }
     
-    id firstValue = [self getValueFromDictionary:dataDict KeyPath:[paramsArray firstObject] RoundingType:roundingType DecimalNumber:decimalNumber];
-    id secondValue = [self getValueFromDictionary:dataDict KeyPath:[paramsArray lastObject] RoundingType:roundingType DecimalNumber:decimalNumber];
+    id firstValue = [self getValueWithKeyPath:[paramsArray firstObject]
+                                UserInfoBlock:userInfoBlock
+                                DataInfoBlock:dataInfoBlock
+                                 RoundingType:roundingType
+                                DecimalNumber:decimalNumber];
+    
+    id secondValue = [self getValueWithKeyPath:[paramsArray lastObject]
+                                 UserInfoBlock:userInfoBlock
+                                 DataInfoBlock:dataInfoBlock
+                                  RoundingType:roundingType
+                                 DecimalNumber:decimalNumber];
+    
     NSString *equationSymbolString = paramsArray[1];
     NSSet *equationSymbols = [NSSet setWithObjects:@"+", @"-", @"*", @"/", @"%", @"||", @"&&", @"==", @"<", @"<=", @">", @">=", @"^", @"&", @"|", @"equal", nil];
 
@@ -253,34 +288,75 @@
 }
 
 #pragma mark - 取值操作
-/**
- * 根据keyPath从字典中取出值 不以__开头的为数值直接返回
- */
-+ (id)getValueFromDictionary:(NSDictionary *)dataDict KeyPath:(NSString *)keyPath RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber{
-    if (![keyPath hasPrefix:@"__"]) {
-       if ([self stringIsNumber:keyPath]) {
-            return [self getRoundResultWithValue:[keyPath doubleValue] RoundingType:roundingType DecimalNumber:decimalNumber];
-        }
-        return keyPath;
++ (id)getValueWithKeyPath:(NSString *)keyPath UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock {
+    
+    if (STRING_IsNull(keyPath)) {
+        return [self createErrorWithErrorString:@"keyPath不能为空"];
     }
     
-    NSString *aKeyPath = [keyPath substringFromIndex:2];
-    NSArray<NSString *> *keyPathArray = [aKeyPath componentsSeparatedByString:@"."];
-    __block id value = dataDict;
-    [keyPathArray enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([value isKindOfClass:[NSDictionary class]] && [[value allKeys] containsObject:obj]) {
-            value = [value objectForKey:obj];
+    if ([keyPath hasPrefix:@"__"]) {
+        if (dataInfoBlock) {
+            return dataInfoBlock(keyPath);
         } else {
-            value = [self createErrorWithErrorString:[NSString stringWithFormat:@"获取数据异常,%@路径不存在",aKeyPath]];
-            *stop = YES;
+            return [self createErrorWithErrorString:@"获取数据失败,dataInfoBlock未设置"];
         }
-    }];
-    
-    if ([self stringIsNumber:value]) {
-        return [self getRoundResultWithValue:[value doubleValue] RoundingType:roundingType DecimalNumber:decimalNumber];
     }
     
-    return value;
+    if ([keyPath hasPrefix:@"##"]) {
+        if (userInfoBlock) {
+            return userInfoBlock(keyPath);
+        } else {
+            return [self createErrorWithErrorString:@"获取数据失败,userInfoBlock未设置"];
+        }
+    }
+    
+    return keyPath;
+}
+
++ (id)getValueWithKeyPath:(NSString *)keyPath UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber {
+    
+    if (STRING_IsNull(keyPath)) {
+        return [self createErrorWithErrorString:@"keyPath不能为空"];
+    }
+    
+    id result;
+    
+    if ([keyPath hasPrefix:@"__"]) {
+        if (dataInfoBlock) {
+            result = dataInfoBlock(keyPath);
+            
+            if (([result isKindOfClass:[NSString class]] && [self stringIsNumber:result])
+                || [result isKindOfClass:[NSNumber class]]) {
+                
+                return [self getRoundResultWithValue:[result doubleValue] RoundingType:roundingType DecimalNumber:decimalNumber];
+            }
+            return result;
+            
+        } else {
+            return [self createErrorWithErrorString:@"获取数据失败,dataInfoBlock未设置"];
+        }
+    }
+    
+    if ([keyPath hasPrefix:@"##"]) {
+        if (userInfoBlock) {
+            result = userInfoBlock(keyPath);
+            
+            if (([result isKindOfClass:[NSString class]] && [self stringIsNumber:result])
+                || [result isKindOfClass:[NSNumber class]]) {
+                
+                return [self getRoundResultWithValue:[result doubleValue] RoundingType:roundingType DecimalNumber:decimalNumber];
+            }
+            return result;
+            
+        } else {
+            return [self createErrorWithErrorString:@"获取数据失败,userInfoBlock未设置"];
+        }
+    }
+    
+    if ([self stringIsNumber:keyPath]) {
+        return [self getRoundResultWithValue:[keyPath doubleValue] RoundingType:roundingType DecimalNumber:decimalNumber];
+    }
+    return keyPath;
 }
 
 #pragma mark - 三目运算符
@@ -359,6 +435,27 @@
     }
 }
 
+#pragma mark - 设置监听
+- (RACSignal *)setObserveWithKeyPath:(NSString *)keyPath UserInfoBind:(UserInfoBind)userInfoBind DataInfoBind:(DataInfoBind)dataInfoBind {
+    if (STRING_IsNull(keyPath)) {
+        return nil;
+    }
+        
+    if ([keyPath hasPrefix:@"__"]) {
+        if (dataInfoBind) {
+            return dataInfoBind(keyPath);
+        }
+    }
+    
+    if ([keyPath hasPrefix:@"##"]) {
+        if (userInfoBind) {
+            return userInfoBind(keyPath);
+        }
+    }
+    
+    return nil;
+}
+
 #pragma mark -
 /**
  * 快速创建错误
@@ -378,5 +475,4 @@
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
     return [pred evaluateWithObject:numberString];
 }
-
 @end

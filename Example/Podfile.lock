@@ -17,32 +17,24 @@ PODS:
   - Masonry (1.1.0)
   - ReactiveObjC (3.1.1)
   - SVProgressHUD (2.2.5)
-  - XNBaseController (0.2.0):
-    - Masonry
-    - XNBaseUI
-    - XNThemeManager
   - XNBaseUI (0.1.1):
     - XNBaseUtils
   - XNBaseUtils (0.1.2)
   - XNDynamicConfigurationTable (0.1.0):
     - Masonry
     - ReactiveObjC
-    - XNBaseController
     - XNBaseUI
     - XNBaseUtils
-    - XNNetWorkManager
     - YYModel
-  - XNNetWorkManager (0.1.21):
+  - XNNetWorkManager (0.1.22):
     - AFNetworking
     - SVProgressHUD
-    - XNUtils
     - YYModel
-  - XNThemeManager (0.1.1)
-  - XNUtils (0.2.2)
   - YYModel (1.0.4)
 
 DEPENDENCIES:
   - XNDynamicConfigurationTable (from `../`)
+  - XNNetWorkManager
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
@@ -50,12 +42,9 @@ SPEC REPOS:
     - Masonry
     - ReactiveObjC
     - SVProgressHUD
-    - XNBaseController
     - XNBaseUI
     - XNBaseUtils
     - XNNetWorkManager
-    - XNThemeManager
-    - XNUtils
     - YYModel
 
 EXTERNAL SOURCES:
@@ -67,15 +56,12 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   ReactiveObjC: 011caa393aa0383245f2dcf9bf02e86b80b36040
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
-  XNBaseController: cd6d0a02e2d82cb597720012031603650e3c8cee
   XNBaseUI: da875f04874938cb5d55e6ea83e422382bafd648
   XNBaseUtils: 18f87ca3986c95be5427232ddca970271fdb06d9
-  XNDynamicConfigurationTable: ddf3e8e7365602a880e77d819bf864b103e7f60f
-  XNNetWorkManager: 53960cfae21df98960a1c124d45d7060575b3aa9
-  XNThemeManager: 68bf32482a6d25a9699aa2b4b8abe2cdbfa1b3e1
-  XNUtils: 0b73458258d19ad9ed72a8289c652c912658a9ca
+  XNDynamicConfigurationTable: 9fd4424f369df9cc38f02a5182476a00a80f860f
+  XNNetWorkManager: 8e481d2d9054106853146d0d69b8c98613672b7d
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 3d7af5d346fae23bb971de6db769dd3f18b8edde
+PODFILE CHECKSUM: b092a9cea16b2ef5fa1482f0eb1bb7f4efcf8e35
 
 COCOAPODS: 1.8.4

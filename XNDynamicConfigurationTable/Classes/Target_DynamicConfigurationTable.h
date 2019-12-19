@@ -11,11 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Target_DynamicConfigurationTable : NSObject
 /*
- 根据配置表创建自定义表格 @{ @"params" : @{ @"configurationInfo" : @{},
-                                        @"dataInfo" : @{} },
+ 根据配置表创建自定义表格 @{ @"params" : @{ @"configurationInfo" : @{} },
                          @"block" : @{ @"saveBlock" : saveBlock,
                                        @"nextBlock" : nextBlock,
-                                       @"userInfoBlock" : userInfoBlock }
+                                       @"dataInfoBlock" : dataInfoBlock
+                                       @"userInfoBlock" : userInfoBlock
+                                       @"dataInfoBind" : dataInfoBind
+                                       @"userInfoBind" : userInfoBInd }
                       }
  */
 - (UIView *)Action_createDynamicConfigurationTable:(NSDictionary *)params;
@@ -28,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)Action_saveDynamicConfigurationTable:(NSDictionary *)params;
  
+@property (nonatomic, strong) NSString *ppp;
+
 @end
 
 NS_ASSUME_NONNULL_END

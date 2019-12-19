@@ -38,10 +38,9 @@ Pod::Spec.new do |s|
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'XNBaseUtils'
   s.dependency 'XNBaseUI'
-  s.dependency 'XNBaseController'
   s.dependency 'YYModel'
   s.dependency 'Masonry'
-  s.dependency 'XNNetWorkManager'
   s.dependency 'ReactiveObjC'
-  s.prefix_header_contents = '#import "XNBaseUtils.h"','#import "Masonry.h"','#import "ReactiveObjC.h"','#import "XNBaseUI.h"','#import "XNBaseViewController.h"','#import "UINavigationController+XNBaseNavigationController.h"','#import "YYModel.h"'
+  s.dependency 'IQKeyboardManager'
+  s.prefix_header_contents = '#import "XNBaseUtils.h"','#import "Masonry.h"','#import "ReactiveObjC.h"','#import "XNBaseUI.h"','#import "YYModel.h"','#import "DCTUtilsClass.h"'
 end

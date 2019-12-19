@@ -8,11 +8,11 @@
 
 #import "DCTViewController.h"
 #import "Target_DynamicConfigurationTable.h"
-#import "XNHTTPManage.h"
 #import "XNBaseUtils.h"
 #import "Masonry.h"
 #import "CFYiNuoPreliminaryApplicationModel.h"
 #import "YYModel.h"
+#import "XNHTTPManage.h"
 
 @interface DCTViewController ()
 

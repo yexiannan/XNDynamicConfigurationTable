@@ -13,7 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
-- (instancetype)initWithConfigurationInfo:(NSDictionary *)configurationInfo DataInfo:(NSMutableDictionary *)dataInfo SaveBlock:(nullable id)saveBlock NextBlock:(nullable id)nextBlock UserInfoBlock:(nullable id)userInfoBlock;
+- (instancetype)initWithConfigurationInfo:(NSDictionary *)configurationInfo
+                                SaveBlock:(nullable id)saveBlock
+                                NextBlock:(nullable id)nextBlock
+                            DataInfoBlock:(nullable DataInfoBlock)dataInfoBlock
+                            UserInfoBlock:(nullable UserInfoBlock)userInfoBlock
+                             DataInfoBind:(nullable DataInfoBind)dataInfoBind
+                             UserInfoBind:(nullable UserInfoBind)userInfoBind;
 
 @end
 

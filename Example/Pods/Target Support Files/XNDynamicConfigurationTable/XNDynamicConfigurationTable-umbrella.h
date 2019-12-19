@@ -10,8 +10,8 @@
 #endif
 #endif
 
+#import "DCTUtilsClass.h"
 #import "DCTConfigurationModel.h"
-#import "DCTFormulaCalculation.h"
 #import "Target_DynamicConfigurationTable.h"
 #import "DCTBaseTableView.h"
 #import "DCTSectionHeaderView.h"
@@ -20,7 +20,6 @@
 #import "DCTContentTableViewCellViewModel.h"
 #import "DCTBaseTableViewCell.h"
 #import "DCTBaseTableViewCellViewModel.h"
-#import "DCTPickeTypeTableViewCell.h"
 #import "DCTPickTypeTableViewCellViewModel.h"
 #import "DCTPickTypeView.h"
 #import "DCTTextFieldTableViewCell.h"

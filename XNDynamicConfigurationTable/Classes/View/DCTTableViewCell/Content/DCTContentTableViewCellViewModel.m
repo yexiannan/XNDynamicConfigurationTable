@@ -14,7 +14,7 @@
     if (self = [super init]) {
         
         @weakify(self)
-        self.cellBlock = ^UITableViewCell * _Nonnull(UITableView * _Nonnull tableView, NSIndexPath * _Nonnull indexPath, NSDictionary * _Nonnull cellConfig, NSMutableDictionary * _Nonnull dataInfo, id  _Nonnull userInfoBlock) {
+        self.cellBlock = ^UITableViewCell * _Nonnull(UITableView * _Nonnull tableView, NSIndexPath * _Nonnull indexPath, NSDictionary * _Nonnull cellConfig, DataInfoBlock  _Nonnull dataInfoBlock, UserInfoBlock  _Nullable userInfoBlock) {
             
             DCTContentCellInfoModel *model = [DCTContentCellInfoModel yy_modelWithJSON:cellConfig];
             DCTContentTableViewCell *cell = [DCTContentTableViewCell newCellWithTableView:tableView IndexPath:indexPath];
@@ -23,13 +23,13 @@
             [model.content enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
                 @strongify(self)
-                id result = [self getValueWithKeyPath:obj DataDictionary:dataInfo UserInfoBlock:userInfoBlock];
+                id result = [DCTUtilsClass getValueWithKeyPath:obj UserInfoBlock:userInfoBlock DataInfoBlock:dataInfoBlock];
                 
                 if (![result isKindOfClass:[NSError class]]) {
                     
                     [contentArray addObject:[NSString stringWithFormat:@"%@",result]];
                 } else {
-                    
+                    NSLog(@"-----取值失败:%@",result);
                     [contentArray addObject:obj];
                 }
             }];

@@ -5,7 +5,8 @@ platform :ios, '8.0'
 
 target 'XNDynamicConfigurationTable_Example' do
   pod 'XNDynamicConfigurationTable', :path => '../'
-
+  pod 'XNNetWorkManager'
+  
   target 'XNDynamicConfigurationTable_Tests' do
     inherit! :search_paths
 
