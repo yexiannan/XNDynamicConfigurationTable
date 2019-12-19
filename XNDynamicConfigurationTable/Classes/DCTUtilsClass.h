@@ -14,9 +14,16 @@ typedef NS_ENUM(NSInteger, DCTRoundingType) {
     DCTRoundingType_Down,//向下取整
 };
 
+#define DCTBundle [NSBundle bundleWithPath:[[NSBundle bundleForClass:[DCTUtilsClass class]] pathForResource:@"XNDynamicConfigurationTable" ofType:@"bundle"]]
+
+//获取数据
 typedef id _Nullable (^UserInfoBlock)(NSString *_Nonnull);
 typedef id _Nullable (^DataInfoBlock)(NSString *_Nonnull);
 
+//设置数据
+typedef id _Nullable (^SetDataInfoBlock)(NSString *_Nonnull, id _Nullable);
+
+//监听数据
 typedef RACSignal * _Nullable (^UserInfoBind)(NSString *_Nonnull);
 typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
 
@@ -38,9 +45,12 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
 /**
  * 根据keyPath设置监听
  */
-- (RACSignal *)setObserveWithKeyPath:(NSString *)keyPath UserInfoBind:(UserInfoBind)userInfoBind DataInfoBind:(DataInfoBind)dataInfoBind;
++ (RACSignal *)setObserveWithKeyPath:(NSString *)keyPath UserInfoBind:(UserInfoBind)userInfoBind DataInfoBind:(DataInfoBind)dataInfoBind;
 
-@property (nonatomic, strong) NSString *ppp;
+/**
+ * 根据keyPath更新数据
+ */
++ (id)setDataInfoWithKeyPath:(NSString *)keyPath DataInfo:(nullable id)dataInfo SetDataInfoBlock:(SetDataInfoBlock)setDataInfoBlock;
 
 @end
 

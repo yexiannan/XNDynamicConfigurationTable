@@ -107,7 +107,7 @@ static CGFloat const _imageInset = 15.f;//提示图片距离单元格右边间�
     
     CGFloat height = [NSString getSizeWithString:self.cellContentLabel.attributedText.string withFont:self.cellContentLabel.font LimitWidth:cellContentLabelWidth].height;
     
-    return height + 20 > 70 ? height + 20 : 70;
+    return height + 20 > 50 ? height + 20 : 50;
 }
 
 #pragma mark - LayoutUI
@@ -150,7 +150,7 @@ static CGFloat const _imageInset = 15.f;//提示图片距离单元格右边间�
         //设置约束决定单元格高度
         CGFloat height = [NSString getSizeWithString:self.cellContentLabel.attributedText.string withFont:self.cellContentLabel.font LimitWidth:cellContentLabelWidth].height;
         make.top.bottom.equalTo(self.contentView);
-        make.height.offset(height + 20 > 70 ? height + 20 : 70).priority(900);
+        make.height.offset(height + 20 > 50 ? height + 20 : 50).priority(900);
     }];
 }
 

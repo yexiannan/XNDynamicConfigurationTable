@@ -21,6 +21,7 @@
 @property (nonatomic, copy) DataInfoBlock dataInfoBlock;
 @property (nonatomic, copy) DataInfoBind dataInfoBind;
 @property (nonatomic, copy) UserInfoBind userInfoBind;
+@property (nonatomic, copy) SetDataInfoBlock setDataInfoBlock;
 
 @end
 
@@ -31,7 +32,8 @@
                             DataInfoBlock:(DataInfoBlock)dataInfoBlock
                             UserInfoBlock:(UserInfoBlock)userInfoBlock
                              DataInfoBind:(DataInfoBind)dataInfoBind
-                             UserInfoBind:(UserInfoBind)userInfoBind {
+                             UserInfoBind:(UserInfoBind)userInfoBind
+                         SetDataInfoBlock:(SetDataInfoBlock)setDataInfoBlock {
     if (self = [super init]) {
         if ([configurationInfo isKindOfClass:[NSDictionary class]]) {
             self.configurationModel = [DCTTableViewInfoModel yy_modelWithJSON:configurationInfo];
@@ -43,8 +45,8 @@
         if (dataInfoBlock) { self.dataInfoBlock = dataInfoBlock; }
         if (userInfoBind) { self.userInfoBind = userInfoBind; }
         if (dataInfoBind) { self.dataInfoBind = dataInfoBind; }
+        if (setDataInfoBlock) { self.setDataInfoBlock = setDataInfoBlock; }
 
-        
         self.tableViewConfiguration = [self.configurationModel createTableViewCellListWithDataInfoBlock:dataInfoBlock UserInfoBlock:userInfoBlock];
         
         id canSaveResult = [DCTUtilsClass getResultWithFormulaString:self.configurationModel.saveShow.formulaString
@@ -158,25 +160,27 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *dict = [self cellConfigurationWithIndexPath:indexPath];
-    if ([dict[@"cellType"] integerValue] == DCTConfigurationCellType_TextField) {
-        DCTTextFieldTableViewCellViewModel *viewModel = [[DCTTextFieldTableViewCellViewModel alloc] init];
-        viewModel.block = ^(NSString * _Nonnull text) {
-            
+    NSDictionary *cellConfiguration = [self cellConfigurationWithIndexPath:indexPath];
+    DCTBaseTableViewCellViewModel *viewModel;
+    if ([cellConfiguration[@"cellType"] integerValue] == DCTConfigurationCellType_TextField) {
+        DCTTextFieldTableViewCellViewModel *textFieldTCellViewMode = [[DCTTextFieldTableViewCellViewModel alloc] init];
+        textFieldTCellViewMode.block = ^(NSString * _Nonnull text) {
+
         };
-        return viewModel.cellBlock(tableView, indexPath, dict, self.dataInfoBlock, self.userInfoBlock);
+        viewModel = textFieldTCellViewMode;
     }
     
-    if ([dict[@"cellType"] integerValue] == DCTConfigurationCellType_Content) {
-        DCTContentTableViewCellViewModel *viewModel = [[DCTContentTableViewCellViewModel alloc] init];
-        return viewModel.cellBlock(tableView, indexPath, dict, self.dataInfoBlock, self.userInfoBlock);
+    if ([cellConfiguration[@"cellType"] integerValue] == DCTConfigurationCellType_Content) {
+        viewModel = [[DCTContentTableViewCellViewModel alloc] init];
     }
     
-    if ([dict[@"cellType"] integerValue] == DCTConfigurationCellType_PickFromDictionary) {
-        DCTPickTypeTableViewCellViewModel *viewModel = [[DCTPickTypeTableViewCellViewModel alloc] init];
-        return viewModel.cellBlock(tableView, indexPath, dict, self.dataInfoBlock, self.userInfoBlock);
+    if ([cellConfiguration[@"cellType"] integerValue] == DCTConfigurationCellType_PickFromDictionary) {
+        viewModel = [[DCTPickTypeTableViewCellViewModel alloc] init];
     }
 
+    if (viewModel) {
+        return viewModel.cellBlock(tableView, indexPath, cellConfiguration, self.dataInfoBlock, self.userInfoBlock, self.setDataInfoBlock);
+    }
     return [UITableViewCell new];
 }
 
@@ -196,10 +200,6 @@
         }];
         
     }
-    
-}
-
-- (void)dealloc {
     
 }
 

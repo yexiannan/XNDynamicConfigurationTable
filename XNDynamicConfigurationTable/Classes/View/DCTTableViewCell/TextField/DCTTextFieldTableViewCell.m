@@ -66,7 +66,7 @@
         }
         
         [unitLabel sizeToFit];
-        unitLabel.frame = CGRectMake(0, 0, unitLabel.width + 10, 20);
+        unitLabel.frame = CGRectMake(0, 0, unitLabel.width + 20, 20);
         [self.cellTextField setRightView:unitLabel];
         [self.cellTextField setRightViewMode:UITextFieldViewModeAlways];
     }

@@ -12,10 +12,13 @@
 - (instancetype)init {
     if (self = [super init]) {
         @weakify(self)
-        self.cellBlock = ^UITableViewCell * _Nonnull(UITableView * _Nonnull tableView, NSIndexPath * _Nonnull indexPath, NSDictionary * _Nonnull cellConfig, DataInfoBlock  _Nonnull dataInfoBlock, UserInfoBlock  _Nullable userInfoBlock) {
+        self.cellBlock = ^UITableViewCell * _Nonnull(UITableView * _Nonnull tableView, NSIndexPath * _Nonnull indexPath, NSDictionary * _Nonnull cellConfig, DataInfoBlock  _Nullable dataInfoBlock, UserInfoBlock  _Nullable userInfoBlock, SetDataInfoBlock  _Nullable setDataInfoBlock) {
           
             DCTPickCellInfoModel *model = [DCTPickCellInfoModel yy_modelWithJSON:cellConfig];
             DCTContentTableViewCell *cell = [DCTContentTableViewCell newCellWithTableView:tableView IndexPath:indexPath];
+            
+            cell.hiddenIcon = NO;
+            cell.icon.image = [UIImage imageNamed:@"icon_arrow" inBundle:DCTBundle compatibleWithTraitCollection:nil];
             NSString *content = @"";
             
             @strongify(self)
@@ -40,7 +43,7 @@
             
             return cell;
             
-        } ;
+        };
     }
     return self;
 }

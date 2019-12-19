@@ -12,7 +12,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         @weakify(self)
-        self.cellBlock = ^UITableViewCell * _Nonnull(UITableView * _Nonnull tableView, NSIndexPath * _Nonnull indexPath, NSDictionary * _Nonnull cellConfig, DataInfoBlock  _Nonnull dataInfoBlock, UserInfoBlock  _Nullable userInfoBlock) {
+        self.cellBlock = ^UITableViewCell * _Nonnull(UITableView * _Nonnull tableView, NSIndexPath * _Nonnull indexPath, NSDictionary * _Nonnull cellConfig, DataInfoBlock  _Nullable dataInfoBlock, UserInfoBlock  _Nullable userInfoBlock, SetDataInfoBlock  _Nullable setDataInfoBlock) {
             
             DCTTextFieldCellInfoModel *model = [DCTTextFieldCellInfoModel yy_modelWithJSON:cellConfig];
             

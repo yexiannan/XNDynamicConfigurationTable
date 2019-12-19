@@ -436,7 +436,7 @@
 }
 
 #pragma mark - 设置监听
-- (RACSignal *)setObserveWithKeyPath:(NSString *)keyPath UserInfoBind:(UserInfoBind)userInfoBind DataInfoBind:(DataInfoBind)dataInfoBind {
++ (RACSignal *)setObserveWithKeyPath:(NSString *)keyPath UserInfoBind:(UserInfoBind)userInfoBind DataInfoBind:(DataInfoBind)dataInfoBind {
     if (STRING_IsNull(keyPath)) {
         return nil;
     }
@@ -454,6 +454,20 @@
     }
     
     return nil;
+}
+
+#pragma mark - 更新数据
++ (id)setDataInfoWithKeyPath:(NSString *)keyPath DataInfo:(id)dataInfo SetDataInfoBlock:(SetDataInfoBlock)setDataInfoBlock {
+    if (STRING_IsNull(keyPath)) {
+        return [self createErrorWithErrorString:@"keyPath不能为空"];
+    }
+    
+    if (setDataInfoBlock) {
+        return setDataInfoBlock(keyPath, dataInfo);
+    } else {
+        return [self createErrorWithErrorString:@"setDataInfoBlock未设置"];
+    }
+    
 }
 
 #pragma mark -

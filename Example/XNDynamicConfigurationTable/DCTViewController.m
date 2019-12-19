@@ -13,9 +13,22 @@
 #import "CFYiNuoPreliminaryApplicationModel.h"
 #import "YYModel.h"
 #import "XNHTTPManage.h"
+#import "ReactiveObjC.h"
+
+//获取数据
+typedef id _Nullable (^UserInfoBlock)(NSString *_Nonnull);
+typedef id _Nullable (^DataInfoBlock)(NSString *_Nonnull);
+
+//设置数据
+typedef id _Nullable (^SetDataInfoBlock)(NSString *_Nonnull, id _Nullable);
+
+//监听数据
+typedef RACSignal * _Nullable (^UserInfoBind)(NSString *_Nonnull);
+typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
+
 
 @interface DCTViewController ()
-
+@property (nonatomic, strong) CFYiNuoPreliminaryApplicationModel *dataInfo;
 @end
 
 @implementation DCTViewController
@@ -26,14 +39,18 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     /*
-    根据配置表创建自定义表格 @{ @"params" : @{ @"configurationInfo" : @{},
-                                           @"dataInfo" : @{} },
+    根据配置表创建自定义表格 @{ @"params" : @{ @"configurationInfo" : @{} },
                             @"block" : @{ @"saveBlock" : saveBlock,
                                           @"nextBlock" : nextBlock,
-                                          @"userInfoBlock" : userInfoBlock }
+                                          @"dataInfoBlock" : dataInfoBlock
+                                          @"userInfoBlock" : userInfoBlock
+                                          @"dataInfoBind" : dataInfoBind
+                                          @"userInfoBind" : userInfoBInd
+                                          @"setDataInfoBlock" : setDataInfoBlock }
                          }
     */
     
+
     
     //创建并注入操作
     void (^saveBlock)(NSDictionary *) = ^(NSDictionary *saveData){
@@ -44,18 +61,40 @@
         NSLog(@"-----nextData = %@", nextData);
     };
     
-    id (^userInfoBlock)(NSString *) = ^(NSString *keyPath){
+    @weakify(self)
+    UserInfoBlock userInfoBlock = ^(NSString *keyPath){
         return [NSString stringWithFormat:@"keyPath = %@, userInfo = %d", keyPath, arc4random()%10];
     };
     
+    DataInfoBlock dataInfoBlock = ^(NSString *keyPath){
+        @strongify(self)
+        return [self.dataInfo valueForKeyPath:keyPath];
+    };
+    
+    DataInfoBind dataInfoBind = ^RACSignal *(NSString *keyPath){
+        @strongify(self)
+        __weak id target_ = self.dataInfo;
+        return [target_ rac_valuesForKeyPath:keyPath observer:self];
+    };
+    
+    SetDataInfoBlock setDataInfoBlock = ^id (NSString *keyPath, id dataInfo){
+        @strongify(self)
+        [self.dataInfo setValue:dataInfo forKeyPath:keyPath];
+        return @(YES);
+    };
+    
+    
     NSDictionary *block = @{ @"saveBlock":saveBlock,
                              @"nextBlock":nextBlock,
-                             @"userInfoBlock":userInfoBlock };
+                             @"userInfoBlock":userInfoBlock,
+                             @"setDataInfoBlock":setDataInfoBlock,
+                             @"dataInfoBind":dataInfoBind,
+                             @"dataInfoBlock":dataInfoBlock,
+    };
     __block NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     NSDictionary *data = [[CFYiNuoPreliminaryApplicationModel new] yy_modelToJSONObject];
     [params setObject:data forKey:@"dataInfo"];
 
-    @weakify(self)
     [XNHTTPManage Post:@"https://rest.apizza.net/mock/20430e46d0052bdbd4acbac3c55e7c51/ApplicationMockData"
             parameters:nil
           hudAnimation:YES

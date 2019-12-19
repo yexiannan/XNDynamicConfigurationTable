@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DCTBaseTableViewCellViewModel : NSObject
-@property (nonatomic, copy) UITableViewCell *(^cellBlock)(UITableView *tableView, NSIndexPath *indexPath, NSDictionary *cellConfig ,DataInfoBlock dataInfoBlock, _Nullable UserInfoBlock userInfoBlock);
+@property (nonatomic, copy) UITableViewCell *(^cellBlock)(UITableView *tableView, NSIndexPath *indexPath, NSDictionary *cellConfig ,_Nullable DataInfoBlock dataInfoBlock, _Nullable UserInfoBlock userInfoBlock, _Nullable SetDataInfoBlock setDataInfoBlock);
 @end
 
 NS_ASSUME_NONNULL_END

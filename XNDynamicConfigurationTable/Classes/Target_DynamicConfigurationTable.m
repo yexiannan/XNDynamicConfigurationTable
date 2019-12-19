@@ -17,7 +17,8 @@
                                           @"dataInfoBlock" : dataInfoBlock
                                           @"userInfoBlock" : userInfoBlock
                                           @"dataInfoBind" : dataInfoBind
-                                          @"userInfoBind" : userInfoBInd }
+                                          @"userInfoBind" : userInfoBInd
+                                          @"setDataInfoBlock" : setDataInfoBlock }
                          }
     */
     id param = [params objectForKey:@"params"];
@@ -30,6 +31,7 @@
     UserInfoBlock userInfoBlock;
     DataInfoBind dataInfoBind;
     UserInfoBind userInfoBind;
+    SetDataInfoBlock setDataInfoBlock;
     
     if ([param isKindOfClass:[NSDictionary class]]) {
         configurationInfo = [(NSDictionary *)param objectForKey:@"configurationInfo"];
@@ -42,6 +44,7 @@
         userInfoBlock = [(NSDictionary *)block objectForKey:@"userInfoBlock"];
         dataInfoBind = [(NSDictionary *)block objectForKey:@"dataInfoBind"];
         userInfoBind = [(NSDictionary *)block objectForKey:@"userInfoBind"];
+        setDataInfoBlock = [(NSDictionary *)block objectForKey:@"setDataInfoBlock"];
     }
         
     NSAssert([configurationInfo isKindOfClass:[NSDictionary class]], @"配置表信息为空或类型错误");
@@ -52,7 +55,8 @@
                                                                    DataInfoBlock:dataInfoBlock
                                                                    UserInfoBlock:userInfoBlock
                                                                     DataInfoBind:dataInfoBind
-                                                                    UserInfoBind:userInfoBind];
+                                                                    UserInfoBind:userInfoBind
+                                                                SetDataInfoBlock:setDataInfoBlock];
     return view;
 }
 

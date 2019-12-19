@@ -22,7 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
                             DataInfoBlock:(nullable DataInfoBlock)dataInfoBlock
                             UserInfoBlock:(nullable UserInfoBlock)userInfoBlock
                              DataInfoBind:(nullable DataInfoBind)dataInfoBind
-                             UserInfoBind:(nullable UserInfoBind)userInfoBind NS_DESIGNATED_INITIALIZER;
+                             UserInfoBind:(nullable UserInfoBind)userInfoBind
+                         SetDataInfoBlock:(nullable SetDataInfoBlock)setDataInfoBlock NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (NSDictionary *)sectionConfigurationWithSection:(NSInteger)section;

@@ -19,7 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
                             DataInfoBlock:(nullable DataInfoBlock)dataInfoBlock
                             UserInfoBlock:(nullable UserInfoBlock)userInfoBlock
                              DataInfoBind:(nullable DataInfoBind)dataInfoBind
-                             UserInfoBind:(nullable UserInfoBind)userInfoBind;
+                             UserInfoBind:(nullable UserInfoBind)userInfoBind
+                         SetDataInfoBlock:(nullable SetDataInfoBlock)setDataInfoBlock;
 
 @end
 

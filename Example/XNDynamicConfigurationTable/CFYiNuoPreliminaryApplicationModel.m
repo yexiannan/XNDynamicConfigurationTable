@@ -59,6 +59,15 @@
     free(properties);
     return model;
 }
+
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key {
+    
+}
+
+- (id)valueForUndefinedKey:(NSString *)key {
+    return nil;
+}
+
 @end
 
 @implementation CarInfo
@@ -110,6 +119,14 @@
     }
     free(properties);
     return model;
+}
+
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key {
+    
+}
+
+- (id)valueForUndefinedKey:(NSString *)key {
+    return nil;
 }
 @end
 
@@ -169,4 +186,11 @@
     return model;
 }
 
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key {
+    
+}
+
+- (id)valueForUndefinedKey:(NSString *)key {
+    return nil;
+}
 @end

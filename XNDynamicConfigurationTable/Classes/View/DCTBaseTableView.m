@@ -23,7 +23,8 @@
                             DataInfoBlock:(DataInfoBlock)dataInfoBlock
                             UserInfoBlock:(UserInfoBlock)userInfoBlock
                              DataInfoBind:(DataInfoBind)dataInfoBind
-                             UserInfoBind:(UserInfoBind)userInfoBind {
+                             UserInfoBind:(UserInfoBind)userInfoBind
+                         SetDataInfoBlock:(SetDataInfoBlock)setDataInfoBlock {
     
     if (self = [super init]) {
         
@@ -33,7 +34,8 @@
                                                                     DataInfoBlock:dataInfoBlock
                                                                     UserInfoBlock:userInfoBlock
                                                                      DataInfoBind:dataInfoBind
-                                                                     UserInfoBind:userInfoBind];
+                                                                     UserInfoBind:userInfoBind
+                                                                 SetDataInfoBlock:setDataInfoBlock];
         
         [self createUI];
         [self subscribeSignal];

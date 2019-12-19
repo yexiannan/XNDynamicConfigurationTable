@@ -17,7 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
                                        @"dataInfoBlock" : dataInfoBlock
                                        @"userInfoBlock" : userInfoBlock
                                        @"dataInfoBind" : dataInfoBind
-                                       @"userInfoBind" : userInfoBInd }
+                                       @"userInfoBind" : userInfoBInd
+                                       @"setDataInfoBlock" : setDataInfoBlock }
                       }
  */
 - (UIView *)Action_createDynamicConfigurationTable:(NSDictionary *)params;
