@@ -10,16 +10,21 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface Target_DynamicConfigurationTable : NSObject
-/*
- 根据配置表创建自定义表格 @{ @"params" : @{ @"configurationInfo" : @{} },
-                         @"block" : @{ @"saveBlock" : saveBlock,
-                                       @"nextBlock" : nextBlock,
-                                       @"dataInfoBlock" : dataInfoBlock
-                                       @"userInfoBlock" : userInfoBlock
-                                       @"dataInfoBind" : dataInfoBind
-                                       @"userInfoBind" : userInfoBInd
-                                       @"setDataInfoBlock" : setDataInfoBlock }
-                      }
+/**
+ *根据创建自定义表格，params应包含以下参数：
+ *
+    @{  @"params" : @{ @"configurationInfo" : @{} }, //配置表信息
+        @"block" : @{ @"saveBlock" : saveBlock,    //保存操作
+                  @"nextBlock" : nextBlock,     //下一步操作
+                  @"dataInfoBlock" : dataInfoBlock     //获取数据操作
+                  @"userInfoBlock" : userInfoBlock   //获取用户信息操作
+                  @"dataInfoBind" : dataInfoBind    //绑定数据操作
+                  @"userInfoBind" : userInfoBInd  //绑定用户信息操作
+                  @"setDataInfoBlock" : setDataInfoBlock }  //设置更新数据操作
+ }
+ *
+ *
+ *
  */
 - (UIView *)Action_createDynamicConfigurationTable:(NSDictionary *)params;
 

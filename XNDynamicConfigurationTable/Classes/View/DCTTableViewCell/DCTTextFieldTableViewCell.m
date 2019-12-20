@@ -33,7 +33,6 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    [self setDataAccess];
     [self layoutUI];
 }
 
@@ -52,7 +51,7 @@
     }
     
     //设置单位
-    [self.cellTextField setRightViewMode:UITextFieldViewModeNever];
+    [self.cellTextField setRightViewMode:UITextFieldViewModeAlways];
     
     if (!STRING_IsNull(self.attributedUnitString.string) || !STRING_IsNull(self.unitString)) {
         UILabel *unitLabel = [UILabel initWithText:STRING_Safe(self.unitString)
@@ -65,10 +64,14 @@
             unitLabel.attributedText = self.attributedUnitString;
         }
         
-        [unitLabel sizeToFit];
-        unitLabel.frame = CGRectMake(0, 0, unitLabel.width + 20, 20);
+        CGFloat width = [NSString getSizeWithString:STRING_IsNull(unitLabel.text) ? STRING_Safe(unitLabel.attributedText.string) : STRING_Safe(unitLabel.text)
+                                           withFont:self.cellTextField.font
+                                         LimitWidth:SCREEN_WIDTH].width;
+        
+        unitLabel.frame = CGRectMake(0, 0, width + 10, 20);
         [self.cellTextField setRightView:unitLabel];
-        [self.cellTextField setRightViewMode:UITextFieldViewModeAlways];
+    } else {
+        self.cellTextField.rightView = nil;
     }
 
 }
@@ -106,8 +109,8 @@
                        range:[string rangeOfString:[titleArray lastObject]]];
     }
     
+    [self setDataAccess];
     self.cellTitleLabel.attributedText = attStr;
-    [self.cellTitleLabel sizeToFit];
     self.cellTextField.text = STRING_Safe(content);
     self.cellTextField.placeholder = STRING_Safe(placeholder);
 }
@@ -123,13 +126,13 @@
     _cellTextField.font = MFont(15);
     _cellTextField.textColor = COLOR_BLACK_4C;
     _cellTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    
+    [self.contentView addSubview:self.cellTitleLabel];
+    [self.contentView addSubview:self.cellTextField];
 }
 
 - (void)layoutUI {
-    [self.contentView addSubview:self.cellTitleLabel];
-    [self.contentView addSubview:self.cellTextField];
-    
-    CGFloat width = self.cellTitleLabel.width + 5;
+    CGFloat width = [NSString getSizeWithString:self.cellTitleLabel.attributedText.string withFont:self.cellTitleLabel.font LimitWidth:SCREEN_WIDTH].width + 5;
     [self.cellTitleLabel mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.offset(15.f);
         make.width.offset(width);
@@ -138,7 +141,7 @@
         make.height.offset(50.f).priority(900);
     }];
 
-    [self.cellTextField mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.cellTextField mas_updateConstraints:^(MASConstraintMaker *make) {
         make.centerY.height.equalTo(self.contentView);
         make.left.equalTo(self.cellTitleLabel.mas_right).offset(15);
         make.right.offset(-15);

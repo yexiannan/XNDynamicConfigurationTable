@@ -50,7 +50,7 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
                          }
     */
     
-
+    self.dataInfo = [CFYiNuoPreliminaryApplicationModel new];
     
     //创建并注入操作
     void (^saveBlock)(NSDictionary *) = ^(NSDictionary *saveData){
@@ -73,17 +73,19 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
     
     DataInfoBind dataInfoBind = ^RACSignal *(NSString *keyPath){
         @strongify(self)
-        __weak id target_ = self.dataInfo;
-        return [target_ rac_valuesForKeyPath:keyPath observer:self];
+        return RACObserve(self, dataInfo.borrower.existingRepayment);
+//        __weak id target_ = self.dataInfo;
+//        return [target_ rac_valuesForKeyPath:keyPath observer:self];
     };
     
     SetDataInfoBlock setDataInfoBlock = ^id (NSString *keyPath, id dataInfo){
         @strongify(self)
         [self.dataInfo setValue:dataInfo forKeyPath:keyPath];
+
         return @(YES);
     };
-    
-    
+
+
     NSDictionary *block = @{ @"saveBlock":saveBlock,
                              @"nextBlock":nextBlock,
                              @"userInfoBlock":userInfoBlock,
@@ -92,8 +94,6 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
                              @"dataInfoBlock":dataInfoBlock,
     };
     __block NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
-    NSDictionary *data = [[CFYiNuoPreliminaryApplicationModel new] yy_modelToJSONObject];
-    [params setObject:data forKey:@"dataInfo"];
 
     [XNHTTPManage Post:@"https://rest.apizza.net/mock/20430e46d0052bdbd4acbac3c55e7c51/ApplicationMockData"
             parameters:nil
@@ -117,7 +117,7 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
                         make.top.equalTo(self.mas_topLayoutGuide);
                         make.bottom.equalTo(self.mas_bottomLayoutGuide);
                     }
-                    
+
                 }];
             }];
         }

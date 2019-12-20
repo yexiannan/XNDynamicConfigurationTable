@@ -136,7 +136,7 @@
                                  DecimalNumber:decimalNumber];
     
     NSString *equationSymbolString = paramsArray[1];
-    NSSet *equationSymbols = [NSSet setWithObjects:@"+", @"-", @"*", @"/", @"%", @"||", @"&&", @"==", @"<", @"<=", @">", @">=", @"^", @"&", @"|", @"equal", nil];
+    NSSet *equationSymbols = [NSSet setWithObjects:@"+", @"-", @"*", @"/", @"%", @"||", @"&&", @"==", @"<", @"<=", @">", @">=", @"^", @"&", @"|", @"equal", @"contain", nil];
 
     //算式有效性验证
     if ([firstValue isKindOfClass:[NSError class]]) {
@@ -160,6 +160,10 @@
     //根据算式符号计算值
     //字符相等判断
     if ([equationSymbolString isEqualToString:@"equal"]) {
+        return [NSString stringWithFormat:@"%d",[[NSString stringWithFormat:@"%@",firstValue] isEqualToString:[NSString stringWithFormat:@"%@",secondValue]]];
+    }
+    
+    if ([equationSymbolString isEqualToString:@"contain"]) {
         return [NSString stringWithFormat:@"%d",[[NSString stringWithFormat:@"%@",firstValue] isEqualToString:[NSString stringWithFormat:@"%@",secondValue]]];
     }
     
@@ -296,7 +300,7 @@
     
     if ([keyPath hasPrefix:@"__"]) {
         if (dataInfoBlock) {
-            return dataInfoBlock(keyPath);
+            return dataInfoBlock([keyPath substringFromIndex:2]);
         } else {
             return [self createErrorWithErrorString:@"获取数据失败,dataInfoBlock未设置"];
         }
@@ -304,7 +308,7 @@
     
     if ([keyPath hasPrefix:@"##"]) {
         if (userInfoBlock) {
-            return userInfoBlock(keyPath);
+            return userInfoBlock([keyPath substringFromIndex:2]);
         } else {
             return [self createErrorWithErrorString:@"获取数据失败,userInfoBlock未设置"];
         }
@@ -323,7 +327,7 @@
     
     if ([keyPath hasPrefix:@"__"]) {
         if (dataInfoBlock) {
-            result = dataInfoBlock(keyPath);
+            result = dataInfoBlock([keyPath substringFromIndex:2]);
             
             if (([result isKindOfClass:[NSString class]] && [self stringIsNumber:result])
                 || [result isKindOfClass:[NSNumber class]]) {
@@ -339,7 +343,7 @@
     
     if ([keyPath hasPrefix:@"##"]) {
         if (userInfoBlock) {
-            result = userInfoBlock(keyPath);
+            result = userInfoBlock([keyPath substringFromIndex:2]);
             
             if (([result isKindOfClass:[NSString class]] && [self stringIsNumber:result])
                 || [result isKindOfClass:[NSNumber class]]) {
@@ -462,12 +466,16 @@
         return [self createErrorWithErrorString:@"keyPath不能为空"];
     }
     
-    if (setDataInfoBlock) {
-        return setDataInfoBlock(keyPath, dataInfo);
-    } else {
-        return [self createErrorWithErrorString:@"setDataInfoBlock未设置"];
+    if ([keyPath hasPrefix:@"__"]) {
+        if (setDataInfoBlock) {
+            return setDataInfoBlock([keyPath substringFromIndex:2], dataInfo);
+        } else {
+            return [self createErrorWithErrorString:@"setDataInfoBlock未设置"];
+        }
     }
     
+    
+    return [self createErrorWithErrorString:[NSString stringWithFormat:@"%@,keyPath设置不正确",keyPath]];
 }
 
 #pragma mark -

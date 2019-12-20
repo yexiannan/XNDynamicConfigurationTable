@@ -22,6 +22,7 @@
 @property (nonatomic, copy) DataInfoBind dataInfoBind;
 @property (nonatomic, copy) UserInfoBind userInfoBind;
 @property (nonatomic, copy) SetDataInfoBlock setDataInfoBlock;
+@property (nonatomic, strong) NSMutableArray<RACDisposable *> *bindDisposables;
 
 @end
 
@@ -38,6 +39,7 @@
         if ([configurationInfo isKindOfClass:[NSDictionary class]]) {
             self.configurationModel = [DCTTableViewInfoModel yy_modelWithJSON:configurationInfo];
         }
+        self.bindDisposables = [NSMutableArray new];
         
         if (saveBlock) { self.saveBlock = saveBlock; }
         if (nextBlock) { self.nextBlock = nextBlock; }
@@ -163,11 +165,10 @@
     NSDictionary *cellConfiguration = [self cellConfigurationWithIndexPath:indexPath];
     DCTBaseTableViewCellViewModel *viewModel;
     if ([cellConfiguration[@"cellType"] integerValue] == DCTConfigurationCellType_TextField) {
-        DCTTextFieldTableViewCellViewModel *textFieldTCellViewMode = [[DCTTextFieldTableViewCellViewModel alloc] init];
-        textFieldTCellViewMode.block = ^(NSString * _Nonnull text) {
-
-        };
-        viewModel = textFieldTCellViewMode;
+        if (indexPath.section == 0 && indexPath.row == 3) {
+            NSLog(@"create new")
+        }
+        viewModel = [DCTTextFieldTableViewCellViewModel new];
     }
     
     if ([cellConfiguration[@"cellType"] integerValue] == DCTConfigurationCellType_Content) {
@@ -179,7 +180,7 @@
     }
 
     if (viewModel) {
-        return viewModel.cellBlock(tableView, indexPath, cellConfiguration, self.dataInfoBlock, self.userInfoBlock, self.setDataInfoBlock);
+        return viewModel.cellBlock(tableView, indexPath, cellConfiguration, self.dataInfoBlock, self.userInfoBind, self.setDataInfoBlock);
     }
     return [UITableViewCell new];
 }
@@ -201,6 +202,63 @@
         
     }
     
+}
+
+#pragma mark - 数据绑定操作
+- (void)setTableViewConfiguration:(NSArray<NSDictionary *> *)tableViewConfiguration {
+    _tableViewConfiguration = tableViewConfiguration;
+    [tableViewConfiguration enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull sectionInfo, NSUInteger sectionIndex, BOOL * _Nonnull stop) {
+        
+        [(NSArray<NSNumber *> *)sectionInfo[@"cells"] enumerateObjectsUsingBlock:^(NSNumber * _Nonnull cellSort, NSUInteger rowIndex, BOOL * _Nonnull stop) {
+        
+            NSDictionary *cellConfiguration = [self cellConfigurationWithIndexPath:[NSIndexPath indexPathForRow:rowIndex
+                                                                                                      inSection:sectionIndex]];
+            DCTBaseCellInfoModel *cellModel = [DCTBaseCellInfoModel yy_modelWithJSON:cellConfiguration];
+            
+            [cellModel.bindData enumerateObjectsUsingBlock:^(DCTDataBindInfoModel * _Nonnull bindInfoModel, NSUInteger idx, BOOL * _Nonnull stop) {
+                
+                [bindInfoModel.bindData enumerateObjectsUsingBlock:^(NSString * _Nonnull bindKeyPath, NSUInteger idx, BOOL * _Nonnull stop) {
+                    
+                    RACDisposable *disposable = [[DCTUtilsClass setObserveWithKeyPath:bindKeyPath UserInfoBind:self.userInfoBind DataInfoBind:self.dataInfoBind] subscribeNext:^(id  _Nullable x) {
+                        
+                        [self respondBindDataWithbindInfoModel:bindInfoModel];
+                        
+                    }];
+                    [self.bindDisposables addObject:disposable];
+                    
+                }];
+                
+            }];
+            
+        }];
+        
+    }];
+}
+
+- (void)respondBindDataWithbindInfoModel:(DCTDataBindInfoModel *)bindInfoModel {
+//    [self.bindDisposables enumerateObjectsUsingBlock:^(RACDisposable * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//        [obj dispose];
+//    }];
+//    [self.bindDisposables removeAllObjects];
+    
+    id formulaResult = [DCTUtilsClass getResultWithFormulaString:bindInfoModel.formulaString
+                                             RoundingType:[bindInfoModel.roundingType integerValue]
+                                            DecimalNumber:[bindInfoModel.decimalNumber integerValue]
+                                            UserInfoBlock:self.userInfoBlock
+                                            DataInfoBlock:self.dataInfoBlock];
+        
+    if (![formulaResult isKindOfClass:[NSError class]]) {
+        [bindInfoModel.responseData enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (self.setDataInfoBlock) {
+                id setDataInfoResult = [DCTUtilsClass setDataInfoWithKeyPath:obj DataInfo:formulaResult SetDataInfoBlock:self.setDataInfoBlock];
+                NSLog(@"-----responseData setDataInfoBlockResult = %@, keyPath = %@", setDataInfoResult,obj);
+                NSLog(@"----5156-%@",self.dataInfoBlock(@"borrow.familyAnnualIncome"));
+            }
+        }];
+    }
+    
+    
+//    self.tableViewConfiguration = [self.configurationModel createTableViewCellListWithDataInfoBlock:self.dataInfoBlock UserInfoBlock:self.userInfoBlock];
 }
 
 @end

@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void(^finishEditBlock)(NSString *text);
 
 @interface DCTTextFieldTableViewCellViewModel : DCTBaseTableViewCellViewModel
-@property (nonatomic, copy)     finishEditBlock      block;//结束编辑
 
 @end
 
