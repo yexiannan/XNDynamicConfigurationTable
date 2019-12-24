@@ -114,6 +114,7 @@
     _tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
     _tableView.delegate = self.viewModel;
     _tableView.dataSource = self.viewModel;
+    _tableView.estimatedRowHeight = 0;
     
     if(@available(iOS 11.0, *)) {
         

@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
                    CellConfig:(NSDictionary *)cellConfig
                 DataInfoBlock:(DataInfoBlock)dataInfoBlock
                 UserInfoBlock:(UserInfoBlock)userInfoBlock
+             SetDataInfoBlock:(SetDataInfoBlock)setDataInfoBlock
                CompletedBlock:(void (^)(void))block;
 @end
 

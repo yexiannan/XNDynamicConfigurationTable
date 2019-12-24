@@ -447,13 +447,13 @@
         
     if ([keyPath hasPrefix:@"__"]) {
         if (dataInfoBind) {
-            return dataInfoBind(keyPath);
+            return dataInfoBind([keyPath substringFromIndex:2]);
         }
     }
     
     if ([keyPath hasPrefix:@"##"]) {
         if (userInfoBind) {
-            return userInfoBind(keyPath);
+            return userInfoBind([keyPath substringFromIndex:2]);
         }
     }
     

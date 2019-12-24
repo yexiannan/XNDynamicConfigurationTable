@@ -166,7 +166,6 @@
     DCTBaseTableViewCellViewModel *viewModel;
     if ([cellConfiguration[@"cellType"] integerValue] == DCTConfigurationCellType_TextField) {
         if (indexPath.section == 0 && indexPath.row == 3) {
-            NSLog(@"create new")
         }
         viewModel = [DCTTextFieldTableViewCellViewModel new];
     }
@@ -194,11 +193,13 @@
         
         DCTPickTypeTableViewCellViewModel *viewModel = [[DCTPickTypeTableViewCellViewModel alloc] init];
         
-        [viewModel pickTypeWithTableView:tableView IndexPath:indexPath CellConfig:dict DataInfoBlock:self.dataInfoBlock UserInfoBlock:self.userInfoBlock CompletedBlock:^{
-           [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [viewModel pickTypeWithTableView:tableView IndexPath:indexPath CellConfig:dict DataInfoBlock:self.dataInfoBlock UserInfoBlock:self.userInfoBlock SetDataInfoBlock:self.setDataInfoBlock CompletedBlock:^{
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [tableView reloadData];
             }];
         }];
+        
+        
         
     }
     
@@ -219,10 +220,12 @@
                 
                 [bindInfoModel.bindData enumerateObjectsUsingBlock:^(NSString * _Nonnull bindKeyPath, NSUInteger idx, BOOL * _Nonnull stop) {
                     
-                    RACDisposable *disposable = [[DCTUtilsClass setObserveWithKeyPath:bindKeyPath UserInfoBind:self.userInfoBind DataInfoBind:self.dataInfoBind] subscribeNext:^(id  _Nullable x) {
-                        
+                    RACSignal *signal = [DCTUtilsClass setObserveWithKeyPath:bindKeyPath UserInfoBind:self.userInfoBind DataInfoBind:self.dataInfoBind];
+                    RACSubject *subject = [RACSubject subject];
+                    [signal subscribe:subject];
+                    
+                    RACDisposable *disposable = [subject subscribeNext:^(id  _Nullable x) {
                         [self respondBindDataWithbindInfoModel:bindInfoModel];
-                        
                     }];
                     [self.bindDisposables addObject:disposable];
                     
@@ -236,11 +239,6 @@
 }
 
 - (void)respondBindDataWithbindInfoModel:(DCTDataBindInfoModel *)bindInfoModel {
-//    [self.bindDisposables enumerateObjectsUsingBlock:^(RACDisposable * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//        [obj dispose];
-//    }];
-//    [self.bindDisposables removeAllObjects];
-    
     id formulaResult = [DCTUtilsClass getResultWithFormulaString:bindInfoModel.formulaString
                                              RoundingType:[bindInfoModel.roundingType integerValue]
                                             DecimalNumber:[bindInfoModel.decimalNumber integerValue]
@@ -251,14 +249,17 @@
         [bindInfoModel.responseData enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (self.setDataInfoBlock) {
                 id setDataInfoResult = [DCTUtilsClass setDataInfoWithKeyPath:obj DataInfo:formulaResult SetDataInfoBlock:self.setDataInfoBlock];
-                NSLog(@"-----responseData setDataInfoBlockResult = %@, keyPath = %@", setDataInfoResult,obj);
-                NSLog(@"----5156-%@",self.dataInfoBlock(@"borrow.familyAnnualIncome"));
+                NSLog(@"-----responseData setDataInfoBlockResult = %@, data = %@, keyPath = %@", setDataInfoResult, formulaResult, obj);
             }
         }];
     }
     
+    [self.bindDisposables enumerateObjectsUsingBlock:^(RACDisposable * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj dispose];
+    }];
+    [self.bindDisposables removeAllObjects];
     
-//    self.tableViewConfiguration = [self.configurationModel createTableViewCellListWithDataInfoBlock:self.dataInfoBlock UserInfoBlock:self.userInfoBlock];
+    self.tableViewConfiguration = [self.configurationModel createTableViewCellListWithDataInfoBlock:self.dataInfoBlock UserInfoBlock:self.userInfoBlock];
 }
 
 @end

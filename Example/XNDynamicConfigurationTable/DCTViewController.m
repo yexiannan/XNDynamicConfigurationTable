@@ -73,9 +73,8 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
     
     DataInfoBind dataInfoBind = ^RACSignal *(NSString *keyPath){
         @strongify(self)
-        return RACObserve(self, dataInfo.borrower.existingRepayment);
-//        __weak id target_ = self.dataInfo;
-//        return [target_ rac_valuesForKeyPath:keyPath observer:self];
+        __weak id target_ = self.dataInfo;
+        return [target_ rac_valuesForKeyPath:keyPath observer:self];
     };
     
     SetDataInfoBlock setDataInfoBlock = ^id (NSString *keyPath, id dataInfo){
@@ -84,7 +83,6 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
 
         return @(YES);
     };
-
 
     NSDictionary *block = @{ @"saveBlock":saveBlock,
                              @"nextBlock":nextBlock,
@@ -127,8 +125,6 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
 
     }];
     
-    
-
 }
 
 - (void)saveConfConfigurationTable {

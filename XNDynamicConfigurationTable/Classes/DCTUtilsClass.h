@@ -33,10 +33,12 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
  * formulaString:算式字符串 dataDict:数据字典 roundingType:取整方式 decimalNumber:取小数点后几位 userInfoBlock:用户信息取值block dataInfoBlock:数据取值block
  */
 + (id)getResultWithFormulaString:(NSString *)formulaString RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock;
+
 /**
  * 根据keyPath获取值 暂时只支持两种类型数据的获取 "__"开头表示从dataInfo中获取,“##”开头表示从userInfo中获取
  */
 + (id)getValueWithKeyPath:(NSString *)keyPath UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock;
+
 /**
  * 带舍入操作的取值
  */

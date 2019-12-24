@@ -48,7 +48,7 @@
     return self;
 }
 
-- (void)pickTypeWithTableView:(UITableView *)tableView IndexPath:(NSIndexPath *)indexPath CellConfig:(NSDictionary *)cellConfig DataInfoBlock:(DataInfoBlock)dataInfoBlock UserInfoBlock:(UserInfoBlock)userInfoBlock CompletedBlock:(void (^)(void))block {
+- (void)pickTypeWithTableView:(UITableView *)tableView IndexPath:(NSIndexPath *)indexPath CellConfig:(NSDictionary *)cellConfig DataInfoBlock:(DataInfoBlock)dataInfoBlock UserInfoBlock:(nonnull UserInfoBlock)userInfoBlock SetDataInfoBlock:(nonnull SetDataInfoBlock)setDataInfoBlock CompletedBlock:(nonnull void (^)(void))block {
     
     if (block) { block(); };
 }
