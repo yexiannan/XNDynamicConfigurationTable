@@ -12,7 +12,7 @@
     if (self = [super init]) {
         self.bindData = @[];
         self.responseData = @[];
-        self.roundingType = @(DCTRoundingType_Down);
+        self.roundingType = @(NSRoundDown);
         self.decimalNumber = @(2);
     }
     return self;
@@ -56,49 +56,6 @@
         self.sections = @[];
     }
     return self;
-}
-
-//根据配置表创建表格结构
-- (NSArray<NSDictionary *> *)createTableViewCellListWithDataInfoBlock:(DataInfoBlock)dataInfoBlock UserInfoBlock:(UserInfoBlock)userInfoBlock {
-    NSMutableArray *tableViewList = [NSMutableArray new];
-    
-    [self.sections enumerateObjectsUsingBlock:^(DCTSectionInfoModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        id sectionShow = [DCTUtilsClass getResultWithFormulaString:obj.show.formulaString
-                                                      RoundingType:[obj.show.roundingType integerValue]
-                                                     DecimalNumber:[obj.show.decimalNumber integerValue]
-                                                     UserInfoBlock:userInfoBlock
-                                                     DataInfoBlock:dataInfoBlock];
-        
-        if (![sectionShow isKindOfClass:[NSError class]]) {
-            if ([sectionShow boolValue]) {
-                NSMutableArray *cellList = [NSMutableArray new];
-                [obj.cells enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull cellInfo, NSUInteger idx, BOOL * _Nonnull stop) {
-                    id cellShow = [DCTUtilsClass getResultWithFormulaString:cellInfo[@"show"][@"formulaString"]
-                                                               RoundingType:[cellInfo[@"show"][@"roundingType"] integerValue]
-                                                              DecimalNumber:[cellInfo[@"show"][@"decimalNumber"] integerValue]
-                                                              UserInfoBlock:userInfoBlock
-                                                              DataInfoBlock:dataInfoBlock];
-
-                    if (![cellShow isKindOfClass:[NSError class]]) {
-                        if ([sectionShow boolValue]) {
-                            [cellList addObject:cellInfo[@"sort"]];
-                        }
-                    } else {
-                        NSLog(@"addCellFailure CellSection:%@, CellSort:%@, reason:%@", obj.sort, cellInfo[@"sort"], cellShow);
-                    }
-                }];
-                            
-                [cellList sortUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:@"" ascending:YES]]];
-                [tableViewList addObject:@{@"sort":obj.sort, @"cells":cellList}];
-            }
-        } else {
-            NSLog(@"addSectionFailure sort:%@, reason:%@", obj.sort, sectionShow);
-        }
-        
-    }];
-    [tableViewList sortUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:@"sort" ascending:YES]]];
-    
-    return tableViewList;
 }
 @end
 

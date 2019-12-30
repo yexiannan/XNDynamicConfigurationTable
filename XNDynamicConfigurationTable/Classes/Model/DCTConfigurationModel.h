@@ -58,7 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) DCTDataBindInfoModel *nextShow;
 @property (nonatomic, copy) NSNumber *integrityVerificationBeforeSave;
 @property (nonatomic, copy) NSArray<DCTSectionInfoModel *> *sections;
-- (NSArray<NSDictionary *> *)createTableViewCellListWithDataInfoBlock:(DataInfoBlock)dataInfoBlock UserInfoBlock:(UserInfoBlock)userInfoBlock;
 @end
 
 @interface DCTStagesInfoModel : NSObject

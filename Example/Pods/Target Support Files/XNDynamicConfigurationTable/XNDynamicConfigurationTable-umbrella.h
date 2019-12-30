@@ -12,6 +12,7 @@
 
 #import "DCTUtilsClass.h"
 #import "DCTConfigurationModel.h"
+#import "DCTTableViewStructureModel.h"
 #import "Target_DynamicConfigurationTable.h"
 #import "DCTBaseTableView.h"
 #import "DCTPickTypeView.h"

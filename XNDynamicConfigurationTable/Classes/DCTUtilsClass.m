@@ -11,7 +11,7 @@
 /**
  * formulaString:算式字符串 dataDict:数据字典 roundingType:取整方式 digitsAfterPoint:取小数点后几位
  */
-+ (id)getResultWithFormulaString:(NSString *)formulaString RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock {
++ (id)getResultWithFormulaString:(NSString *)formulaString RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock {
     //当传入的算式字符串为空或非字符串时 返回空
     if (STRING_IsNull(formulaString)) {
         return @"";
@@ -27,7 +27,7 @@
 }
 
 
-+ (id)getResultWithCorrectFormulaString:(NSString *)formulaString RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock {
++ (id)getResultWithCorrectFormulaString:(NSString *)formulaString RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock {
     
     NSRange firstTernaryOperatorRange = [formulaString rangeOfString:@" ? "];
     //三目运算
@@ -110,7 +110,7 @@
 /**
  * 计算单个算式 @"carInfoObj.price + carInfoObj.payment" => @"1505"
  */
-+ (id)getResultOfSingleFormula:(NSString *)formula RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock{
++ (id)getResultOfSingleFormula:(NSString *)formula RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock{
     NSArray<NSString *> *paramsArray = [formula componentsSeparatedByString:@" "];
     if (paramsArray.count != 3) {
         if (paramsArray.count == 1) {
@@ -268,7 +268,7 @@
 /**
  * 舍入与取位数操作 支持17位有效数字的操作
  */
-+ (NSString *)getRoundResultWithValue:(long double)value RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber {
++ (NSString *)getRoundResultWithValue:(long double)value RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber {
     long double result = [self getDoubleOfRoundResultWithValue:value RoundingType:roundingType DecimalNumber:decimalNumber];
     NSString *resultString = [NSString stringWithFormat:@"%0.17Lf",result];
     if (decimalNumber > 0) {
@@ -280,13 +280,13 @@
 /**
  * 舍入与取位数操作 支持17位有效数字的操作
  */
-+ (long double)getDoubleOfRoundResultWithValue:(long double)value RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber {
++ (long double)getDoubleOfRoundResultWithValue:(long double)value RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber {
     long double roundindResult = value;
     NSInteger powNum = pow(10, decimalNumber);
 
-    if (roundingType == DCTRoundingType_Up) { roundindResult = ceill(value * powNum) / powNum; }
-    if (roundingType == DCTRoundingType_Down) { roundindResult = floorl(value * powNum) / powNum; }
-    if (roundingType == DCTRoundingType_Round) { roundindResult = roundl(value * powNum) / powNum; }
+    if (roundingType == NSRoundUp) { roundindResult = ceill(value * powNum) / powNum; }
+    if (roundingType == NSRoundDown) { roundindResult = floorl(value * powNum) / powNum; }
+    if (roundingType == NSRoundPlain) { roundindResult = roundl(value * powNum) / powNum; }
     
     return roundindResult;
 }
@@ -317,7 +317,7 @@
     return keyPath;
 }
 
-+ (id)getValueWithKeyPath:(NSString *)keyPath UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock RoundingType:(DCTRoundingType)roundingType DecimalNumber:(NSInteger)decimalNumber {
++ (id)getValueWithKeyPath:(NSString *)keyPath UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber {
     
     if (STRING_IsNull(keyPath)) {
         return [self createErrorWithErrorString:@"keyPath不能为空"];

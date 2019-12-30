@@ -53,7 +53,7 @@
 - (void)subscribeSignal {
     @weakify(self)
     //当根据配置表生成的表格结构变化时更新表格
-    [[RACObserve(self, viewModel.tableViewConfiguration)
+    [[RACObserve(self, viewModel.tableviewStructure)
         deliverOnMainThread]
         subscribeNext:^(id  _Nullable x) {
         

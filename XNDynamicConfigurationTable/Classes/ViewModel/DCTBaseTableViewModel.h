@@ -6,12 +6,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DCTTableViewStructureModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DCTBaseTableViewModel : NSObject<UITableViewDataSource, UITableViewDelegate>
-@property (nonatomic, copy) NSArray<NSDictionary *> *tableViewConfiguration;
-
+@property (nonatomic, strong) DCTTableViewStructureModel *tableviewStructure;
 @property (nonatomic, assign) BOOL canSave;//页面是否可保存
 @property (nonatomic, assign) BOOL canNext;//页面是否可提交至下一步
 
