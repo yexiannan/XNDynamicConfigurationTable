@@ -50,6 +50,8 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
                          }
     */
     
+    
+    
     self.dataInfo = [CFYiNuoPreliminaryApplicationModel new];
     
     //创建并注入操作

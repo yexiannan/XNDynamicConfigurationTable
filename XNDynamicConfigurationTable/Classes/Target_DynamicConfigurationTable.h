@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                   @"nextBlock" : nextBlock,     //下一步操作
                   @"dataInfoBlock" : dataInfoBlock     //获取数据操作
                   @"userInfoBlock" : userInfoBlock   //获取用户信息操作
+                  @"configBlock" : configBlock   //获取字典表信息操作
                   @"dataInfoBind" : dataInfoBind    //绑定数据操作
                   @"userInfoBind" : userInfoBInd  //绑定用户信息操作
                   @"setDataInfoBlock" : setDataInfoBlock }  //设置更新数据操作
@@ -35,8 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
  }
  */
 - (void)Action_saveDynamicConfigurationTable:(NSDictionary *)params;
- 
-@property (nonatomic, strong) NSString *ppp;
+
 
 @end
 

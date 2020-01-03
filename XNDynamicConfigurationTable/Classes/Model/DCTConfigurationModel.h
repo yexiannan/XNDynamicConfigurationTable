@@ -8,45 +8,89 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, DCTConfigurationCellType) {
-    DCTConfigurationCellType_Content = 101,
-    DCTConfigurationCellType_ContentWithoutTitle = 102,
-    DCTConfigurationCellType_TextField = 201,
-    DCTConfigurationCellType_TextView = 301,
-    DCTConfigurationCellType_PickFromDictionary = 401,
-    DCTConfigurationCellType_PickFromServer = 402,
-    DCTConfigurationCellType_PickFromConfig = 403,
-    DCTConfigurationCellType_PickDate = 501,
-    DCTConfigurationCellType_PickDateZone = 502,
-    DCTConfigurationCellType_PickAddress = 601,
-    DCTConfigurationCellType_PickAddressFromServer = 602,
-    DCTConfigurationCellType_PickPhotoSingleKey = 701,
-    DCTConfigurationCellType_PickPhotoMutiKey = 702,
-    DCTConfigurationCellType_PickPhotoFromServer = 703,
-    DCTConfigurationCellType_VINCodeRecognition = 801,
-    DCTConfigurationCellType_MultiColumn = 901,
-    DCTConfigurationCellType_SubTable = 1001,
-    DCTConfigurationCellType_SeparatorCell = 1101,
+    DCTConfigurationCellType_Content                = 101,
+    DCTConfigurationCellType_ContentWithoutTitle    = 102,
+    DCTConfigurationCellType_TextField              = 201,
+    DCTConfigurationCellType_TextView               = 301,
+    DCTConfigurationCellType_PickFromDictionary     = 401,
+    DCTConfigurationCellType_PickFromServer         = 402,
+    DCTConfigurationCellType_PickDate               = 501,
+    DCTConfigurationCellType_PickDateZone           = 502,
+    DCTConfigurationCellType_PickAddress            = 601,
+    DCTConfigurationCellType_PickAddressFromServer  = 602,
+    DCTConfigurationCellType_PickPhotoSingleKey     = 701,
+    DCTConfigurationCellType_PickPhotoMutiKey       = 702,
+    DCTConfigurationCellType_PickPhotoFromServer    = 703,
+    DCTConfigurationCellType_VINCodeRecognition     = 801,
+    DCTConfigurationCellType_MultiColumn            = 901,
+    DCTConfigurationCellType_SubTable               = 1001,
+    DCTConfigurationCellType_SeparatorCell          = 1101,
+};
+
+typedef NS_ENUM(NSInteger, DCTFontWeightType) {
+    DCTFontWeightType_Light     = 0,
+    DCTFontWeightType_Regular   = 1,
+    DCTFontWeightType_Medium    = 2,
+    DCTFontWeightType_Bold      = 3,
 };
 
 NS_ASSUME_NONNULL_BEGIN
 @interface DCTDataBindInfoModel : NSObject
+/**绑定字段数组*/
 @property (nonatomic, copy) NSArray<NSString *> *bindData;
+/**响应字段数组*/
 @property (nonatomic, copy) NSArray<NSString *> *responseData;
+/**舍入方式 default NSRoundDown*/
 @property (nonatomic, copy) NSNumber *roundingType;
+/**小数位数 default 2*/
 @property (nonatomic, copy) NSNumber *decimalNumber;
+/**算式字符串*/
 @property (nonatomic, copy) NSString *formulaString;
+/**针对算式字符串得出的结果进行验证的算式字符串*/
+@property (nonatomic, copy) NSString *resultJudge;
+/**提示文字*/
+@property (nonatomic, copy) NSString *resultTip;
+/**结果不符合预期是否依然更新值 default YES*/
+@property (nonatomic, copy) NSNumber *canReplace;
 @end
 
 @interface DCTURLInfoModel : NSObject
+/**配置的url域名类型*/
 @property (nonatomic, copy) NSNumber *host;
+/**url域名后的路径*/
 @property (nonatomic, copy) NSString *path;
+/**请求参数*/
 @property (nonatomic, copy) NSDictionary *params;
 @end
 
+@interface DCTFontInfoModel : NSObject
+/**字体大小 default 14*/
+@property (nonatomic, copy) NSNumber *fontSize;
+/**字重 default DCTFontWeightType_Regular*/
+@property (nonatomic, copy) NSNumber *fontWeight;
+/**颜色RRGGBBAA default #333333FF*/
+@property (nonatomic, copy) NSString *color;
+
+@end
+
 #pragma mark - 表格结构
+@interface DCTTableHandleModel : NSObject
+/**操作名称 用于在按钮上显示*/
+@property (nonatomic, copy) NSString *handleName;
+/**操作类型 不同的操作类型执行不同的处理*/
+@property (nonatomic, copy) NSNumber *handleType;
+/**判断是否显示此操作*/
+@property (nonatomic, strong) DCTDataBindInfoModel *handleShow;
+/**执行操作前是否需要判断表格是否填写完成*/
+@property (nonatomic, copy) NSNumber *integrityVerificationBeforeHandle;
+/**表格操作请求*/
+@property (nonatomic, strong) DCTURLInfoModel *handleRequest;
+@end
+
 @interface DCTSectionInfoModel : NSObject
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *subTitle;
+@property (nonatomic, strong) DCTFontInfoModel *titleFont;
 @property (nonatomic, copy) NSNumber *sort;
 @property (nonatomic, strong) DCTDataBindInfoModel *show;
 @property (nonatomic, copy) NSArray<NSDictionary *> *cells;
@@ -54,8 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DCTTableViewInfoModel : NSObject
 @property (nonatomic, copy) NSString *title;
-@property (nonatomic, strong) DCTDataBindInfoModel *saveShow;
-@property (nonatomic, strong) DCTDataBindInfoModel *nextShow;
+@property (nonatomic, copy) NSArray<DCTTableHandleModel *> *tableHandle;
 @property (nonatomic, copy) NSNumber *integrityVerificationBeforeSave;
 @property (nonatomic, copy) NSArray<DCTSectionInfoModel *> *sections;
 @end
@@ -77,38 +120,59 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSNumber *cellType;
 @property (nonatomic, copy) NSNumber *sort;
 @property (nonatomic, strong) DCTDataBindInfoModel *show;
-@property (nonatomic, strong) DCTDataBindInfoModel *canEdit;
-@property (nonatomic, copy) NSNumber *necessary;
 @property (nonatomic, copy) NSArray<DCTDataBindInfoModel *> *bindData;
 @end
 
 //101.文本单元格
 @interface DCTContentCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
+@property (nonatomic, strong) DCTFontInfoModel *titleFont;
 @property (nonatomic, copy) NSArray<NSString *> *content;
+@property (nonatomic, strong) DCTFontInfoModel *contentFont;
 @property (nonatomic, copy) NSString *separator;
 @property (nonatomic, copy) NSString *unit;
+@property (nonatomic, strong) DCTFontInfoModel *unitFont;
 @end
 
 //102.文本无标题
 @interface DCTContentCellWithoutTitleInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSArray<NSString *> *content;
+@property (nonatomic, strong) DCTFontInfoModel *contentFont;
 @property (nonatomic, copy) NSString *separator;
 @end
 
+
+typedef NS_ENUM(NSInteger, DCTContentType) {
+    DCTContentType_Content          = 1,
+    DCTContentType_Phone            = 2,
+    DCTContentType_Decimal          = 3,
+    DCTContentType_Integer          = 4,
+    DCTContentType_URL              = 5,
+    DCTContentType_NumberAndLetter  = 6,
+};
 //201.输入框
 @interface DCTTextFieldCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
+@property (nonatomic, strong) DCTFontInfoModel *titleFont;
 @property (nonatomic, copy) NSString *content;
+@property (nonatomic, strong) DCTFontInfoModel *contentFont;
+@property (nonatomic, strong) DCTDataBindInfoModel *canEdit;
+@property (nonatomic, strong) DCTDataBindInfoModel *necessary;
 @property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, copy) NSString *unit;
+@property (nonatomic, strong) DCTFontInfoModel *unitFont;
+/**正则表达式数组*/
 @property (nonatomic, copy) NSArray<NSString *> *regularExpressions;
+/**文本/键盘类型 default DCTContentType_Content*/
 @property (nonatomic, copy) NSNumber *contentType;
 @end
 
 //301.输入文本框
 @interface DCTTextViewCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSArray<NSString *> *content;
+@property (nonatomic, strong) DCTFontInfoModel *contentFont;
+@property (nonatomic, strong) DCTDataBindInfoModel *canEdit;
+@property (nonatomic, strong) DCTDataBindInfoModel *necessary;
 @property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, copy) NSNumber *minLength;
 @property (nonatomic, copy) NSNumber *maxLength;
@@ -117,7 +181,10 @@ NS_ASSUME_NONNULL_BEGIN
 //401.选择类型单元格-从字典表获取
 @interface DCTPickCellInfoModel : DCTBaseCellInfoModel
 @property (nonatomic, copy) NSString *title;
+@property (nonatomic, strong) DCTFontInfoModel *titleFont;
 @property (nonatomic, copy) NSArray<NSString *> *content;
+@property (nonatomic, strong) DCTFontInfoModel *contentFont;
+@property (nonatomic, strong) DCTDataBindInfoModel *canEdit;
 @property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, copy) NSDictionary *dictionaryKey;
 @end
@@ -128,14 +195,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSArray<NSString *> *content;
 @property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, strong) DCTURLInfoModel *request;
-@end
-
-//403.选择类型单元格-配置表带configList
-@interface DCTPickFromConfigCellInfoModel : DCTBaseCellInfoModel
-@property (nonatomic, copy) NSString *title;
-@property (nonatomic, copy) NSArray<NSString *> *content;
-@property (nonatomic, copy) NSString *placeholder;
-@property (nonatomic, copy) NSArray<NSDictionary *> *configList;
 @end
 
 //501.选择单个时间单元格

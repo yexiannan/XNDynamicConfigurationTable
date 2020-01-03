@@ -23,7 +23,6 @@ typedef RACSignal * _Nullable (^UserInfoBind)(NSString *_Nonnull);
 typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
 
 @interface DCTUtilsClass : NSObject
-
 /**
  * formulaString:算式字符串 dataDict:数据字典 roundingType:取整方式 decimalNumber:取小数点后几位 userInfoBlock:用户信息取值block dataInfoBlock:数据取值block
  */
@@ -35,9 +34,9 @@ typedef RACSignal * _Nullable (^DataInfoBind)(NSString *_Nonnull);
 + (id)getValueWithKeyPath:(NSString *)keyPath UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock;
 
 /**
- * 带舍入操作的取值
- */
-+ (id)getValueWithKeyPath:(NSString *)keyPath UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber;
+* 舍入与取位数操作
+*/
++ (NSString *)getRoundingStringWithValue:(NSString *)value RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber;
 
 /**
  * 根据keyPath设置监听

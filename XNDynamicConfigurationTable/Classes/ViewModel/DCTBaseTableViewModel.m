@@ -155,8 +155,7 @@
     NSDictionary *dict = [self cellConfigurationWithIndexPath:indexPath];
     
     if ([dict[@"cellType"] integerValue] == DCTConfigurationCellType_PickFromDictionary
-        || [dict[@"cellType"] integerValue] == DCTConfigurationCellType_PickFromServer
-        || [dict[@"cellType"] integerValue] == DCTConfigurationCellType_PickFromConfig) {
+        || [dict[@"cellType"] integerValue] == DCTConfigurationCellType_PickFromServer) {
         
         DCTPickTypeTableViewCellViewModel *viewModel = [[DCTPickTypeTableViewCellViewModel alloc] init];
         

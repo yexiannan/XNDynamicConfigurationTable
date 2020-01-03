@@ -10,10 +10,11 @@
 @implementation DCTDataBindInfoModel
 - (instancetype)init {
     if (self = [super init]) {
-        self.bindData = @[];
-        self.responseData = @[];
-        self.roundingType = @(NSRoundDown);
-        self.decimalNumber = @(2);
+        self.bindData       = @[];
+        self.responseData   = @[];
+        self.roundingType   = @(NSRoundDown);
+        self.decimalNumber  = @(2);
+        self.canReplace     = @(YES);
     }
     return self;
 }
@@ -26,34 +27,54 @@
     }
     return self;
 }
+@end
 
+@implementation DCTFontInfoModel
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.fontSize   = @(14);
+        self.fontWeight = @(DCTFontWeightType_Regular);
+        self.color      = @"#333333FF";
+    }
+    return self;
+}
 @end
 
 #pragma mark - 表格结构
+@implementation DCTTableHandleModel
++ (NSDictionary *)modelContainerPropertyGenericClass {
+    return @{@"handleShow":[DCTDataBindInfoModel class],
+             @"handleRequest":[DCTURLInfoModel class]};
+}
+@end
+
 @implementation DCTSectionInfoModel
 + (NSDictionary *)modelContainerPropertyGenericClass {
-    return @{@"show":[DCTDataBindInfoModel class]};
+    return @{@"show":[DCTDataBindInfoModel class],
+             @"titleFont":[DCTFontInfoModel class]};
 }
 
 - (instancetype)init {
     if (self = [super init]) {
-        self.cells = @[];
+        self.cells      = @[];
+        self.titleFont  = [[DCTFontInfoModel alloc] init];
     }
     return self;
 }
-
 @end
 
 @implementation DCTTableViewInfoModel
 + (NSDictionary *)modelContainerPropertyGenericClass {
-    return @{@"saveShow":[DCTDataBindInfoModel class],
-             @"nextShow":[DCTDataBindInfoModel class],
+    return @{@"tableHandle":[DCTTableHandleModel class],
              @"sections":[DCTSectionInfoModel class]};
 }
 
 - (instancetype)init {
     if (self = [super init]) {
-        self.sections = @[];
+        self.tableHandle    = @[];
+        self.sections       = @[];
+        self.integrityVerificationBeforeSave = @(NO);
     }
     return self;
 }
@@ -89,45 +110,82 @@
 @implementation DCTBaseCellInfoModel
 + (NSDictionary *)modelContainerPropertyGenericClass {
     return @{@"show":[DCTDataBindInfoModel class],
-             @"canEdit":[DCTDataBindInfoModel class],
              @"bindData":[DCTDataBindInfoModel class]};
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.bindData = @[];
+    }
+    return self;
 }
 @end
 
 @implementation DCTContentCellInfoModel
++ (NSDictionary *)modelContainerPropertyGenericClass {
+    return @{@"titleFont":[DCTFontInfoModel class],
+             @"contentFont":[DCTFontInfoModel class],
+             @"unitFont":[DCTFontInfoModel class]};
+}
+
 - (instancetype)init {
     if (self = [super init]) {
-        self.content = @[];
+        self.content        = @[];
+        self.titleFont      = [[DCTFontInfoModel alloc] init];
+        self.contentFont    = [[DCTFontInfoModel alloc] init];
+        self.unitFont       = [[DCTFontInfoModel alloc] init];
     }
     return self;
 }
 @end
 
 @implementation DCTContentCellWithoutTitleInfoModel
++ (NSDictionary *)modelContainerPropertyGenericClass {
+    return @{@"contentFont":[DCTFontInfoModel class]};
+}
+
 - (instancetype)init {
     if (self = [super init]) {
-        self.content = @[];
+        self.content        = @[];
+        self.contentFont    = [[DCTFontInfoModel alloc] init];
     }
     return self;
 }
 @end
 
 @implementation DCTTextFieldCellInfoModel
++ (NSDictionary *)modelContainerPropertyGenericClass {
+    return @{@"titleFont":[DCTFontInfoModel class],
+             @"contentFont":[DCTFontInfoModel class],
+             @"unitFont":[DCTFontInfoModel class],
+             @"canEdit":[DCTDataBindInfoModel class],
+             @"necessary":[DCTDataBindInfoModel class]};
+}
+
 - (instancetype)init {
     if (self = [super init]) {
+        self.titleFont      = [[DCTFontInfoModel alloc] init];
+        self.contentFont    = [[DCTFontInfoModel alloc] init];
+        self.unitFont       = [[DCTFontInfoModel alloc] init];
+        self.contentType    = @(DCTContentType_Content);
         self.regularExpressions = @[];
-        self.contentType = @(1);
     }
     return self;
 }
 @end
 
 @implementation DCTTextViewCellInfoModel
++ (NSDictionary *)modelContainerPropertyGenericClass {
+    return @{@"contentFont":[DCTFontInfoModel class]};
+}
+
 - (instancetype)init {
     if (self = [super init]) {
-        self.content = @[];
-        self.minLength = @(0);
-        self.maxLength = @(-1);
+        self.content        = @[];
+        self.contentFont    = [[DCTFontInfoModel alloc] init];
+        self.minLength      = @(0);
+        self.maxLength      = @(-1);
     }
     return self;
 }
@@ -150,16 +208,6 @@
  - (instancetype)init {
      if (self = [super init]) {
          self.content = @[];
-     }
-     return self;
- }
-@end
-
-@implementation DCTPickFromConfigCellInfoModel
- - (instancetype)init {
-     if (self = [super init]) {
-         self.content = @[];
-         self.configList = @[];
      }
      return self;
  }

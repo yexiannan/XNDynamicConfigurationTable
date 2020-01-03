@@ -17,13 +17,26 @@
         return @"";
     }
     
+    //检查首个括号是否为左括号 避免首个括号为右括号时分割字符串错误造成崩溃 Thanks foccoder
+    NSRange left = [formulaString rangeOfString:@"("];
+    NSRange right = [formulaString rangeOfString:@")"];
+    if (left.location > right.location) {
+        return [self createErrorWithErrorString:@"%@算式格式不正确,右括号不能在首位"];
+    }
+    
     NSInteger leftParenthesisCount = [NSMutableArray arrayWithArray:[formulaString componentsSeparatedByString:@"("]].count;
     NSInteger rightParenthesisCount = [NSMutableArray arrayWithArray:[formulaString componentsSeparatedByString:@")"]].count;
     if (leftParenthesisCount != rightParenthesisCount) {
         return [self createErrorWithErrorString:@"左右括号数量不一致"];
     }
     
-    return [self getResultWithCorrectFormulaString:formulaString RoundingType:roundingType DecimalNumber:decimalNumber UserInfoBlock:userInfoBlock DataInfoBlock:dataInfoBlock];
+    id result = [self getResultWithCorrectFormulaString:formulaString RoundingType:roundingType DecimalNumber:decimalNumber UserInfoBlock:userInfoBlock DataInfoBlock:dataInfoBlock];
+    
+    if ([result isKindOfClass:[NSDecimalNumber class]]) {
+        return [self getRoundingStringWithValue:[result stringValue] RoundingType:roundingType DecimalNumber:decimalNumber];
+    } else {
+        return result;
+    }
 }
 
 
@@ -61,11 +74,7 @@
     NSMutableArray *rightParenthesis = [NSMutableArray arrayWithArray:[[leftParenthesis lastObject] componentsSeparatedByString:@")"]];
     //无算式只有一个keyPath时 直接返回绑定的值
     if (leftParenthesisCount  == 1) {
-        return [self getValueWithKeyPath:[leftParenthesis firstObject]
-                           UserInfoBlock:userInfoBlock
-                           DataInfoBlock:dataInfoBlock
-                            RoundingType:roundingType
-                           DecimalNumber:decimalNumber];
+        return [self getValueWithKeyPath:[leftParenthesis firstObject] UserInfoBlock:userInfoBlock DataInfoBlock:dataInfoBlock];
     }
     
     //计算最里层的算式
@@ -114,26 +123,18 @@
     NSArray<NSString *> *paramsArray = [formula componentsSeparatedByString:@" "];
     if (paramsArray.count != 3) {
         if (paramsArray.count == 1) {
-            return [self getValueWithKeyPath:[paramsArray firstObject]
-                               UserInfoBlock:userInfoBlock
-                               DataInfoBlock:dataInfoBlock
-                                RoundingType:roundingType
-                               DecimalNumber:decimalNumber];
+            return [self getValueWithKeyPath:[paramsArray firstObject] UserInfoBlock:userInfoBlock DataInfoBlock:dataInfoBlock];
         }
-        return [self createErrorWithErrorString:[NSString stringWithFormat:@"%@算式格式不正确,缺少参数或参数间未用空格分割",formula]];
+        return [self createErrorWithErrorString:[NSString stringWithFormat:@"%@算式格式不正确,缺少参数或参数间未用空格分割或左右括号位置相反",formula]];
     }
     
     id firstValue = [self getValueWithKeyPath:[paramsArray firstObject]
                                 UserInfoBlock:userInfoBlock
-                                DataInfoBlock:dataInfoBlock
-                                 RoundingType:roundingType
-                                DecimalNumber:decimalNumber];
+                                DataInfoBlock:dataInfoBlock];
     
     id secondValue = [self getValueWithKeyPath:[paramsArray lastObject]
                                  UserInfoBlock:userInfoBlock
-                                 DataInfoBlock:dataInfoBlock
-                                  RoundingType:roundingType
-                                 DecimalNumber:decimalNumber];
+                                 DataInfoBlock:dataInfoBlock];
     
     NSString *equationSymbolString = paramsArray[1];
     NSSet *equationSymbols = [NSSet setWithObjects:@"+", @"-", @"*", @"/", @"%", @"||", @"&&", @"==", @"<", @"<=", @">", @">=", @"^", @"&", @"|", @"equal", @"contain", nil];
@@ -144,6 +145,14 @@
     }
     if ([secondValue isKindOfClass:[NSError class]]) {
         return secondValue;
+    }
+    if ([firstValue isKindOfClass:[NSDecimalNumber class]]
+        || [firstValue isKindOfClass:[NSNumber class]]) {
+        firstValue = [firstValue stringValue];
+    }
+    if ([secondValue isKindOfClass:[NSDecimalNumber class]]
+        || [secondValue isKindOfClass:[NSNumber class]]) {
+        secondValue = [secondValue stringValue];
     }
     if (![firstValue isKindOfClass:[NSString class]]) {
         return [self createErrorWithErrorString:[NSString stringWithFormat:@"%@根据参数获取到的数据格式不正确",[paramsArray firstObject]]];
@@ -160,105 +169,104 @@
     //根据算式符号计算值
     //字符相等判断
     if ([equationSymbolString isEqualToString:@"equal"]) {
-        return [NSString stringWithFormat:@"%d",[[NSString stringWithFormat:@"%@",firstValue] isEqualToString:[NSString stringWithFormat:@"%@",secondValue]]];
+        return [NSString stringWithFormat:@"%d",[[firstValue stringValue] isEqualToString:[secondValue stringValue]]];
     }
     
     if ([equationSymbolString isEqualToString:@"contain"]) {
-        return [NSString stringWithFormat:@"%d",[[NSString stringWithFormat:@"%@",firstValue] isEqualToString:[NSString stringWithFormat:@"%@",secondValue]]];
+        return [NSString stringWithFormat:@"%d",[[firstValue stringValue] containsString:[secondValue stringValue]]];
     }
     
     //判断是否为数字
     if (![self stringIsNumber:firstValue]) {
-        return [self createErrorWithErrorString:[NSString stringWithFormat:@"数据异常%@格式错误",[paramsArray firstObject]]];
+        return [self createErrorWithErrorString:[NSString stringWithFormat:@"数据异常%@非数字无法进行计算",[paramsArray firstObject]]];
     }
     if (![self stringIsNumber:secondValue]) {
-        return [self createErrorWithErrorString:[NSString stringWithFormat:@"数据异常%@格式错误",[paramsArray lastObject]]];
+        return [self createErrorWithErrorString:[NSString stringWithFormat:@"数据异常%@非数字无法进行计算",[paramsArray lastObject]]];
     }
+    
+    
+    NSDecimalNumber *firstDecimal = [NSDecimalNumber decimalNumberWithString:firstValue];
+    NSDecimalNumber *secondDecimal = [NSDecimalNumber decimalNumberWithString:secondValue];
     
     //运算符号
     if ([equationSymbolString isEqualToString:@"+"]) {
-        return [self getRoundResultWithValue:[firstValue doubleValue] + [secondValue doubleValue]
-                                RoundingType:roundingType
-                               DecimalNumber:decimalNumber];
+        return [firstDecimal decimalNumberByAdding:secondDecimal];
     }
     
     if ([equationSymbolString isEqualToString:@"-"]) {
-        return [self getRoundResultWithValue:[firstValue doubleValue] - [secondValue doubleValue]
-                                RoundingType:roundingType
-                               DecimalNumber:decimalNumber];
+        return [firstDecimal decimalNumberBySubtracting:secondDecimal];
     }
     
     if ([equationSymbolString isEqualToString:@"*"]) {
-        return [self getRoundResultWithValue:[firstValue doubleValue] * [secondValue doubleValue]
-                                RoundingType:roundingType
-                               DecimalNumber:decimalNumber];
+        return [firstDecimal decimalNumberByMultiplyingBy:secondDecimal];
     }
     
     if ([equationSymbolString isEqualToString:@"/"]) {
-        return [self getRoundResultWithValue:[firstValue doubleValue] / [secondValue doubleValue]
-                                RoundingType:roundingType
-                               DecimalNumber:decimalNumber];
+        return [firstDecimal decimalNumberByDividingBy:secondDecimal];
     }
     
     if ([equationSymbolString isEqualToString:@"%"]) {
-        //分割字符判断小数位数 先将小数转为整数，取余后在转回小数
-        NSString *firstValueString = [NSString stringWithFormat:@"%@",firstValue];
-        NSString *secondValueString = [NSString stringWithFormat:@"%@",secondValue];
-
-        NSInteger powNum = pow(10, 6);
+        //判断小数位数 先将小数转为整数，取余后在转回小数
+        NSString *firstValueString = [firstDecimal stringValue];
+        NSString *secondValueString = [secondDecimal stringValue];
+        NSInteger firstPow = 0, secondPow = 0, finalPow = 0;
         
-        NSInteger intFirstValue = [firstValueString doubleValue] * powNum;
-        NSInteger intSecondValue = [secondValueString doubleValue] * powNum;
-    
-        return [self getRoundResultWithValue:(intFirstValue % intSecondValue) / powNum
-                                RoundingType:roundingType
-                               DecimalNumber:decimalNumber];
+        if ([firstValueString containsString:@"."]) {
+            firstPow =  firstValueString.length - [firstValueString rangeOfString:@"."].location - 1;
+        }
+        if ([secondValueString containsString:@"."]) {
+            secondPow =  secondValueString.length - [secondValueString rangeOfString:@"."].location - 1;
+        }
+        finalPow = firstPow > secondPow ? firstPow : secondPow;
+        NSInteger powNumber = pow(10, finalPow);
+        
+        return [NSDecimalNumber decimalNumberWithMantissa:(NSInteger)([firstValueString doubleValue] *powNumber) % (NSInteger)([secondValueString doubleValue] *powNumber) exponent:-finalPow isNegative:NO];
     }
     
     
     //大小判断
-    long double firstDoubleValue = [self getDoubleOfRoundResultWithValue:[firstValue doubleValue] RoundingType:roundingType DecimalNumber:decimalNumber];
-    long double secondDoubleValue = [self getDoubleOfRoundResultWithValue:[secondValue doubleValue] RoundingType:roundingType DecimalNumber:decimalNumber];
+    long double firstDoubleValue = [firstValue doubleValue];
+    long double secondDoubleValue = [secondValue doubleValue];
     
     if ([equationSymbolString isEqualToString:@"=="]) {
-        return [NSString stringWithFormat:@"%d",firstDoubleValue == secondDoubleValue];
+        return [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",firstDoubleValue == secondDoubleValue]];
     }
     
     if ([equationSymbolString isEqualToString:@"<"]) {
-        return [NSString stringWithFormat:@"%d",firstDoubleValue < secondDoubleValue];
+        return [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",firstDoubleValue < secondDoubleValue]];
     }
     
     if ([equationSymbolString isEqualToString:@"<="]) {
-        return [NSString stringWithFormat:@"%d",firstDoubleValue <= secondDoubleValue];
+        return [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",firstDoubleValue <= secondDoubleValue]];
     }
     
     if ([equationSymbolString isEqualToString:@">"]) {
-        return [NSString stringWithFormat:@"%d",firstDoubleValue > secondDoubleValue];
+        return [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",firstDoubleValue > secondDoubleValue]];
     }
     
     if ([equationSymbolString isEqualToString:@">="]) {
-        return [NSString stringWithFormat:@"%d",firstDoubleValue >= secondDoubleValue];
+        return [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",firstDoubleValue >= secondDoubleValue]];
     }
     
     //逻辑判断
     if ([equationSymbolString isEqualToString:@"||"]) {
-        return [NSString stringWithFormat:@"%d",[firstValue boolValue] || [secondValue boolValue]];
+        return [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",[firstValue boolValue] || [secondValue boolValue]]];
     }
     
     if ([equationSymbolString isEqualToString:@"&&"]) {
-        return [NSString stringWithFormat:@"%d",[firstValue boolValue] && [secondValue boolValue]];
+        return [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",[firstValue boolValue] && [secondValue boolValue]]];
     }
     
     if ([equationSymbolString isEqualToString:@"^"]) {
-        return [NSString stringWithFormat:@"%d",[firstValue boolValue] ^ [secondValue boolValue]];
+        return [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",[firstValue boolValue] ^ [secondValue boolValue]]];
     }
     
     if ([equationSymbolString isEqualToString:@"&"]) {
-        return [NSString stringWithFormat:@"%d",[firstValue boolValue] & [secondValue boolValue]];
+        return [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",[firstValue boolValue] & [secondValue boolValue]]];
     }
     
     if ([equationSymbolString isEqualToString:@"|"]) {
-        return [NSString stringWithFormat:@"%d",[firstValue boolValue] | [secondValue boolValue]];
+        return [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",[firstValue boolValue] | [secondValue boolValue]]];
     }
     
     return [self createErrorWithErrorString:@"未知错误"];
@@ -266,29 +274,16 @@
 
 #pragma mark - 舍入操作
 /**
- * 舍入与取位数操作 支持17位有效数字的操作
+ * 舍入与取位数操作
  */
-+ (NSString *)getRoundResultWithValue:(long double)value RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber {
-    long double result = [self getDoubleOfRoundResultWithValue:value RoundingType:roundingType DecimalNumber:decimalNumber];
-    NSString *resultString = [NSString stringWithFormat:@"%0.17Lf",result];
++ (NSString *)getRoundingStringWithValue:(NSString *)value RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber {
+    NSDecimalNumberHandler *handle = [[NSDecimalNumberHandler alloc] initWithRoundingMode:roundingType scale:decimalNumber raiseOnExactness:NO raiseOnOverflow:NO raiseOnUnderflow:NO raiseOnDivideByZero:YES];
+    NSDecimalNumber *number = [[NSDecimalNumber decimalNumberWithString:value] decimalNumberByRoundingAccordingToBehavior:handle];
+    NSString *resultString = [NSString stringWithFormat:@"%@",number];
     if (decimalNumber > 0) {
         return [resultString substringToIndex:[resultString rangeOfString:@"."].location + 1 + decimalNumber];
     }
     return [resultString substringToIndex:[resultString rangeOfString:@"."].location];
-}
-
-/**
- * 舍入与取位数操作 支持17位有效数字的操作
- */
-+ (long double)getDoubleOfRoundResultWithValue:(long double)value RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber {
-    long double roundindResult = value;
-    NSInteger powNum = pow(10, decimalNumber);
-
-    if (roundingType == NSRoundUp) { roundindResult = ceill(value * powNum) / powNum; }
-    if (roundingType == NSRoundDown) { roundindResult = floorl(value * powNum) / powNum; }
-    if (roundingType == NSRoundPlain) { roundindResult = roundl(value * powNum) / powNum; }
-    
-    return roundindResult;
 }
 
 #pragma mark - 取值操作
@@ -314,52 +309,6 @@
         }
     }
     
-    return keyPath;
-}
-
-+ (id)getValueWithKeyPath:(NSString *)keyPath UserInfoBlock:(UserInfoBlock)userInfoBlock DataInfoBlock:(DataInfoBlock)dataInfoBlock RoundingType:(NSRoundingMode)roundingType DecimalNumber:(NSInteger)decimalNumber {
-    
-    if (STRING_IsNull(keyPath)) {
-        return [self createErrorWithErrorString:@"keyPath不能为空"];
-    }
-    
-    id result;
-    
-    if ([keyPath hasPrefix:@"__"]) {
-        if (dataInfoBlock) {
-            result = dataInfoBlock([keyPath substringFromIndex:2]);
-            
-            if (([result isKindOfClass:[NSString class]] && [self stringIsNumber:result])
-                || [result isKindOfClass:[NSNumber class]]) {
-                
-                return [self getRoundResultWithValue:[result doubleValue] RoundingType:roundingType DecimalNumber:decimalNumber];
-            }
-            return result;
-            
-        } else {
-            return [self createErrorWithErrorString:@"获取数据失败,dataInfoBlock未设置"];
-        }
-    }
-    
-    if ([keyPath hasPrefix:@"##"]) {
-        if (userInfoBlock) {
-            result = userInfoBlock([keyPath substringFromIndex:2]);
-            
-            if (([result isKindOfClass:[NSString class]] && [self stringIsNumber:result])
-                || [result isKindOfClass:[NSNumber class]]) {
-                
-                return [self getRoundResultWithValue:[result doubleValue] RoundingType:roundingType DecimalNumber:decimalNumber];
-            }
-            return result;
-            
-        } else {
-            return [self createErrorWithErrorString:@"获取数据失败,userInfoBlock未设置"];
-        }
-    }
-    
-    if ([self stringIsNumber:keyPath]) {
-        return [self getRoundResultWithValue:[keyPath doubleValue] RoundingType:roundingType DecimalNumber:decimalNumber];
-    }
     return keyPath;
 }
 
