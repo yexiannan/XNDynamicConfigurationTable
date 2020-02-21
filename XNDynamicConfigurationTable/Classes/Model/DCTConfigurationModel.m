@@ -110,7 +110,14 @@
 @implementation DCTBaseCellInfoModel
 + (NSDictionary *)modelContainerPropertyGenericClass {
     return @{@"show":[DCTDataBindInfoModel class],
-             @"bindData":[DCTDataBindInfoModel class]};
+             @"bindData":[DCTDataBindInfoModel class],
+             @"titleFont":[DCTFontInfoModel class],
+             @"contentFont":[DCTFontInfoModel class],
+             @"placeholderFont":[DCTFontInfoModel class
+                                 
+                                 
+                                 
+                                 ]};
 }
 
 - (instancetype)init {
@@ -159,16 +166,19 @@
     return @{@"titleFont":[DCTFontInfoModel class],
              @"contentFont":[DCTFontInfoModel class],
              @"unitFont":[DCTFontInfoModel class],
+             @"placeholderFont":[DCTFontInfoModel class],
              @"canEdit":[DCTDataBindInfoModel class],
              @"necessary":[DCTDataBindInfoModel class]};
 }
 
 - (instancetype)init {
     if (self = [super init]) {
-        self.titleFont      = [[DCTFontInfoModel alloc] init];
-        self.contentFont    = [[DCTFontInfoModel alloc] init];
-        self.unitFont       = [[DCTFontInfoModel alloc] init];
-        self.contentType    = @(DCTContentType_Content);
+        self.titleFont          = [[DCTFontInfoModel alloc] init];
+        self.contentFont        = [[DCTFontInfoModel alloc] init];
+        self.unitFont           = [[DCTFontInfoModel alloc] init];
+        self.placeholderFont    = [[DCTFontInfoModel alloc] init];
+        self.placeholderFont.color = @"#C7C7CDFF";
+        self.contentType        = @(DCTContentType_Content);
         self.regularExpressions = @[];
     }
     return self;
@@ -177,24 +187,42 @@
 
 @implementation DCTTextViewCellInfoModel
 + (NSDictionary *)modelContainerPropertyGenericClass {
-    return @{@"contentFont":[DCTFontInfoModel class]};
+    return @{@"contentFont":[DCTFontInfoModel class],
+             @"placeholderFont":[DCTFontInfoModel class],
+             @"canEdit":[DCTDataBindInfoModel class],
+             @"necessary":[DCTDataBindInfoModel class]};
 }
 
 - (instancetype)init {
     if (self = [super init]) {
-        self.content        = @[];
-        self.contentFont    = [[DCTFontInfoModel alloc] init];
-        self.minLength      = @(0);
-        self.maxLength      = @(-1);
+        self.content            = @[];
+        self.contentFont        = [[DCTFontInfoModel alloc] init];
+        self.placeholderFont    = [[DCTFontInfoModel alloc] init];
+        self.placeholderFont.color = @"#C7C7CDFF";
+        self.minLength          = @(0);
+        self.maxLength          = @(-1);
     }
     return self;
 }
 @end
 
 @implementation DCTPickCellInfoModel
++ (NSDictionary *)modelContainerPropertyGenericClass {
+    return @{@"titleFont":[DCTFontInfoModel class],
+             @"contentFont":[DCTFontInfoModel class],
+             @"placeholderFont":[DCTFontInfoModel class],
+             @"canEdit":[DCTDataBindInfoModel class],
+             @"necessary":[DCTDataBindInfoModel class],
+             @"dictionaryKey":[DCTDataBindInfoModel class]};
+}
+
 - (instancetype)init {
     if (self = [super init]) {
         self.content = @[];
+        self.titleFont          = [[DCTFontInfoModel alloc] init];
+        self.contentFont        = [[DCTFontInfoModel alloc] init];
+        self.placeholderFont    = [[DCTFontInfoModel alloc] init];
+        self.placeholderFont.color = @"#C7C7CDFF";
     }
     return self;
 }
@@ -202,12 +230,19 @@
 
 @implementation DCTPickFromServerCellInfoModel
 + (NSDictionary *)modelContainerPropertyGenericClass {
-    return @{@"request":[DCTURLInfoModel class]};
+    return @{@"request":[DCTURLInfoModel class],
+             @"titleFont":[DCTFontInfoModel class],
+             @"contentFont":[DCTFontInfoModel class],
+             @"placeholderFont":[DCTFontInfoModel class]};
 }
 
  - (instancetype)init {
      if (self = [super init]) {
          self.content = @[];
+         self.titleFont          = [[DCTFontInfoModel alloc] init];
+         self.contentFont        = [[DCTFontInfoModel alloc] init];
+         self.placeholderFont    = [[DCTFontInfoModel alloc] init];
+         self.placeholderFont.color = @"#C7C7CDFF";
      }
      return self;
  }
